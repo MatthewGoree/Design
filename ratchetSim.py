@@ -15,24 +15,11 @@ def test(theta):
         #Friction
         avel = avel * .997
 
-        #Magnet Force
-        if (theta < magnet_range) or ((theta < math.pi + magnet_range) and (theta > math.pi)):
-            f = -1 * math.fabs(math.sin(theta)) * f_const
-            all_dv.append(-1)
-            #print("neg force: theta = {0}".format(theta * 180 / math.pi))
+        #Ratchet Force
 
-        elif (theta > math.pi - magnet_range) or ((theta < math.pi) and theta > math.pi - magnet_range):
-            f = 1 * math.fabs(math.sin(theta)) * f_const
-            all_dv.append(1)
-            #print("pos force: theta = {0}".format(theta * 180 / math.pi))
-        else:
-            f = 0
-            all_dv.append(0)
-            #print("no force: theta = {0}".format(theta * 180 / math.pi))
 
-        torque = f * l
+        #Add Changes
         dv = torque * dt / I
-
         avel = avel + dv
         theta = theta + avel * dt
 
