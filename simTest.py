@@ -16,10 +16,13 @@ def distance(theta, radius):
     else:
         print(deg)
 
-def rtest():
+# added test as an argument so this can be used with multiple sims 
+def rtest(sim_test):
     #Does a run with random initial theta
     theta_0 = rand.random() * 2 * math.pi
-    a = test(theta_0)
+    a = sim_test(theta_0)
+
+    print('Final angle: ', a["theta"][-1])
 
     plt.subplot(2,2,1)
     plt.plot(a["time"], a["theta"])
@@ -118,9 +121,6 @@ def test(theta):
     all_distance = [distance(i,r) for i in all_theta]
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
             "distance" : all_distance, "dv" : all_dv}
-        
-
-        
+                
 def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
-    
