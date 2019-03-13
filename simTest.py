@@ -73,12 +73,15 @@ def test(theta):
     m = 1
     l = .2
     r = 1
-    I = m * 4 * r / 12
-    f_const = 88
-    #f_const = 0
-    max_iter = 5000
-    dt = .001
-    avel = 30
+    #I = m * 4 * r / 12
+
+    I = 0.004064 * 2
+
+    f_const = 8.89644 #2lbs of force
+
+    max_iter = 50000
+    dt = .00005
+    avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
     magnet_range = math.pi/6
     
     all_theta = [theta]
@@ -124,3 +127,7 @@ def test(theta):
                 
 def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
+
+if __name__ == '__main__':
+    print('here')
+    rtest(test)
