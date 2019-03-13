@@ -16,7 +16,7 @@ def distance(theta, radius):
     else:
         print(deg)
 
-# added test as an argument so this can be used with multiple sims 
+# added test as an argument so this can be used with multiple sims
 def rtest(sim_test):
     #Does a run with random initial theta
     theta_0 = rand.random() * 2 * math.pi
@@ -50,7 +50,7 @@ def mtest(n):
     #Perform n sims with random starting angles
     #prints the percentage of successful runs
     #returns a list of distances
-    
+
     results = [test(rand.random() * 2 * math.pi)["distance"][-1] for i in range(n)]
     s = [i for i in results if math.fabs(i) < .3]
     print("{0}%".format(len(s) * 100 / len(results)))
@@ -61,7 +61,7 @@ def otest(n):
     #performs n sims with angles incremented from 0 to 2pi
     #prints percentage of successful runs
     #returns a list of distances
-    
+
     results = [test(i * 2 * math.pi / n)['distance'][-1] for i in range(n)]
     s = [i for i in results if math.fabs(i) < .2]
     print("{0}%".format(len(s) * 100 / len(results)))
@@ -70,12 +70,21 @@ def otest(n):
 
 def test(theta):
     #performs a sim with given starting angle
-    m = 1
-    l = .2
-    r = 1
+    motor_mass = .845 #kg
+    propeller_mass = .300 #kg
+    added_mass = .2 #weight of whatever we add to motor (kg)
+
+    m = motor_mass + propeller_mass + added_mass
+    prop_length = .7 #meter
+    prop_rad = prop_length / 2
+    motor_rad = .089 / 2 #meters
+
+
+    prop_I = 0.004064 * 2
+    motor_I = (motor_mass * motor_rad ** 2) / 2 #I = m * r ^2 for thin shelled cylinder, assume only half of motor mass is spinning
     #I = m * 4 * r / 12
 
-    I = 0.004064 * 2
+    I = prop_I + motor_I
 
     f_const = 8.89644 #2lbs of force
 
@@ -83,7 +92,7 @@ def test(theta):
     dt = .00005
     avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
     magnet_range = math.pi/6
-    
+
     all_theta = [theta]
     all_avel = [avel]
     all_dv = [0]
@@ -96,15 +105,15 @@ def test(theta):
         if (theta < magnet_range) or ((theta < math.pi + magnet_range) and (theta > math.pi)):
             f = -1 * math.fabs(math.sin(theta)) * f_const
             all_dv.append(-1)
-            
+
         elif (theta > math.pi - magnet_range) or ((theta < math.pi) and theta > math.pi - magnet_range):
             f = 1 * math.fabs(math.sin(theta)) * f_const
             all_dv.append(1)
-            
+
         else:
             f = 0
             all_dv.append(0)
-            
+
 
         torque = f * l
         dv = torque * dt / I
@@ -124,7 +133,7 @@ def test(theta):
     all_distance = [distance(i,r) for i in all_theta]
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
             "distance" : all_distance, "dv" : all_dv}
-                
+
 def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
