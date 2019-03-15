@@ -96,6 +96,17 @@ def test(theta):
     all_theta = [theta]
     all_avel = [avel]
     all_dv = [0]
+    
+    # aero drag values
+    air_density = 1.225
+    v = 26.8
+    A = 6.4 * 100**-2
+    Cd_front = .01
+    Cd_back = .34
+
+    # old values still needed for older functions - want to remove in the future
+    r=1
+    l=.2
 
     for i in range(1,max_iter):
         #Friction
@@ -114,8 +125,11 @@ def test(theta):
             f = 0
             all_dv.append(0)
 
+        #Aero Torque = force_back * half length of prop - force_front * half length of prop
+        # Cd is adjusted for angle with the cos 
+        aero_torque = (air_density * v**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_length /4
 
-        torque = f * l
+        torque = f * l + aero_torque
         dv = torque * dt / I
         avel = avel + dv
         theta = theta + avel * dt
