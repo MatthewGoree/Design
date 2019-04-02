@@ -16,6 +16,43 @@ def distance(theta, radius):
     else:
         print(deg)
 
+def magnetForce(theta, magnets, magnet_range):
+    # assuming all magnets come in pairs 
+    # magnet thetas should include the angle from 0 the first magnet is placed at 
+    # magnet range is assumed to be the same for all 
+
+    # the sum of magnet forces init at 0 (will be returned)
+    f_sum = 0
+    dv = 0
+
+    #print('____begin new time_____')
+    #Magnet Force
+    for magnet in magnets:
+
+        magnet_offset = magnet[0]
+        f_const = magnet[1]
+
+        # get theta value relative to the magnet (original should not have theta change)
+        rel_theta = theta - magnet_offset
+
+        # make sure the relative angle is between 0 and 2*pi 
+        if rel_theta < 0:
+            rel_theta += 2*math.pi 
+
+        # magnetic force 
+        if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
+            f_sum  += -1 * math.fabs(math.sin(rel_theta)) * f_const
+            dv += -1
+
+        elif (rel_theta > math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
+            f_sum  += math.fabs(math.sin(rel_theta)) * f_const
+            dv += -1
+
+        #print('forces:',f_sum)
+
+
+    return f_sum
+
 # added test as an argument so this can be used with multiple sims
 def rtest(sim_test):
     #Does a run with random initial theta
@@ -86,11 +123,12 @@ def test(theta):
 
     I = prop_I + motor_I
 
-    f_const = 8.89644 #2lbs of force
+    f_const = 8.89644 #2 lbs of force
 
     max_iter = 50000
-    dt = .00005
+    dt = .0005
     avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
+
     magnet_range = math.pi/6
 
     all_theta = [theta]
@@ -104,14 +142,24 @@ def test(theta):
     Cd_front = .01
     Cd_back = .34
 
-    # old values still needed for older functions - want to remove in the future
-    r=1
-    l=.2
+    # magnet = (offset_angle, f_const)
 
+    #magnet_thetas = [0, math.pi/6, math.pi - math.pi/6]
+    #magnets = [(0, 8.89644), (math.pi/6, 8.89644/8), (math.pi - math.pi/6, 8.89644/8)]
+    #magnets = [(0, 8.89644)]
+    magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
+    
     for i in range(1,max_iter):
         #Friction
-        avel = avel * .997
+        #avel = avel * .997
+        avel = avel * .995
 
+        #print('____begin new time_____')
+        # this f is now the sum of forces 
+        #f = magnetForce(theta, magnets, magnet_range)
+        f = 0
+
+        '''
         #Magnet Force
         if (theta < magnet_range) or ((theta < math.pi + magnet_range) and (theta > math.pi)):
             f = -1 * math.fabs(math.sin(theta)) * f_const
@@ -124,19 +172,24 @@ def test(theta):
         else:
             f = 0
             all_dv.append(0)
+        '''
 
         #Aero Torque = force_back * half length of prop - force_front * half length of prop
         # Cd is adjusted for angle with the cos 
-        aero_torque = (air_density * v**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_length /4
+        #aero_torque = (air_density * v**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_length /4
 
-        torque = f * l + aero_torque
+        torque = f * motor_rad #+ aero_torque
         dv = torque * dt / I
+
+        all_dv.append(dv)
+
         avel = avel + dv
         theta = theta + avel * dt
 
         #reset theta to within 2pi range
         if (theta >= 2 * math.pi):
-            theta = theta - (2 * math.pi)
+            #theta = theta - (2 * math.pi)
+            theta = theta % (2*math.pi)
         if (theta < 0):
             theta += 2 * math.pi
 
@@ -144,7 +197,9 @@ def test(theta):
         all_avel.append(avel)
 
     all_t = [i * dt for i in range(max_iter)]
-    all_distance = [distance(i,r) for i in all_theta]
+
+    # r probably out of date here 
+    all_distance = [distance(i,prop_rad) for i in all_theta]
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
             "distance" : all_distance, "dv" : all_dv}
 
@@ -152,5 +207,6 @@ def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
 if __name__ == '__main__':
-    print('here')
     rtest(test)
+    #print('mtest')
+    #mtest(1000)
