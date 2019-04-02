@@ -23,9 +23,7 @@ def magnetForce(theta, magnets, magnet_range):
 
     # the sum of magnet forces init at 0 (will be returned)
     f_sum = 0
-    dv = 0
 
-    #print('____begin new time_____')
     #Magnet Force
     for magnet in magnets:
 
@@ -41,15 +39,10 @@ def magnetForce(theta, magnets, magnet_range):
 
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
-            f_sum  += -1 * math.fabs(math.sin(rel_theta)) * f_const
-            dv += -1
+            f_sum  += -1 * math.fabs(math.cos(rel_theta)) * f_const
 
-        elif (rel_theta > math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
-            f_sum  += math.fabs(math.sin(rel_theta)) * f_const
-            dv += -1
-
-        #print('forces:',f_sum)
-
+        elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
+            f_sum  += math.fabs(math.cos(rel_theta)) * f_const
 
     return f_sum
 
@@ -59,7 +52,11 @@ def rtest(sim_test):
     theta_0 = rand.random() * 2 * math.pi
     a = sim_test(theta_0)
 
-    print('Final angle: ', a["theta"][-1])
+    print('Starting angle: ', theta_0)
+
+    print('Final angle: ', a["theta"][-1] * 180/math.pi)
+    print('Final distance: ', a["distance"][-1])
+    print('Final avel', a["avel"][-1])
 
     plt.subplot(2,2,1)
     plt.plot(a["time"], a["theta"])
@@ -125,9 +122,13 @@ def test(theta):
 
     f_const = 8.89644 #2 lbs of force
 
-    max_iter = 50000
     dt = .0005
+    max_iter = math.floor(30/dt)
+
     avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
+
+    # for testing 
+    #avel =  2 * (13/5) * math.pi 
 
     magnet_range = math.pi/6
 
@@ -144,34 +145,30 @@ def test(theta):
 
     # magnet = (offset_angle, f_const)
 
-    #magnet_thetas = [0, math.pi/6, math.pi - math.pi/6]
-    #magnets = [(0, 8.89644), (math.pi/6, 8.89644/8), (math.pi - math.pi/6, 8.89644/8)]
+    #magnets = [(0, 8.89644), (math.pi/6, 8.89644/4), (math.pi - math.pi/6, 8.89644/4)]
     #magnets = [(0, 8.89644)]
-    magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
+    #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
+
+    magnets = [(0,8.89644)] #, (math.pi/2, -8.89644)]
     
     for i in range(1,max_iter):
-        #Friction
-        #avel = avel * .997
-        avel = avel * .995
 
-        #print('____begin new time_____')
+        #Friction
+        avel = avel * .9963
+
         # this f is now the sum of forces 
-        #f = magnetForce(theta, magnets, magnet_range)
-        f = 0
+        f1 = magnetForce(theta, magnets, magnet_range)
+        f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range)
+        f = f1 + f2
 
         '''
-        #Magnet Force
-        if (theta < magnet_range) or ((theta < math.pi + magnet_range) and (theta > math.pi)):
-            f = -1 * math.fabs(math.sin(theta)) * f_const
-            all_dv.append(-1)
-
-        elif (theta > math.pi - magnet_range) or ((theta < math.pi) and theta > math.pi - magnet_range):
-            f = 1 * math.fabs(math.sin(theta)) * f_const
-            all_dv.append(1)
-
-        else:
-            f = 0
-            all_dv.append(0)
+        if f1 or f2:
+            print('_____it begins____')
+            print('theta1:', theta * 180/math.pi)
+            print('theta2:', theta * 180/math.pi + 90)
+            print('force 1:', f1)
+            print('force 2:', f2)
+            print('total force:',f)
         '''
 
         #Aero Torque = force_back * half length of prop - force_front * half length of prop
@@ -182,13 +179,11 @@ def test(theta):
         dv = torque * dt / I
 
         all_dv.append(dv)
-
         avel = avel + dv
         theta = theta + avel * dt
 
         #reset theta to within 2pi range
         if (theta >= 2 * math.pi):
-            #theta = theta - (2 * math.pi)
             theta = theta % (2*math.pi)
         if (theta < 0):
             theta += 2 * math.pi
@@ -209,4 +204,4 @@ def save_data(test, fname):
 if __name__ == '__main__':
     rtest(test)
     #print('mtest')
-    #mtest(1000)
+    otest(50)
