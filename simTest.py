@@ -106,6 +106,9 @@ def rtest(sim_test):
     plt.plot(a["time"], a["distance"])
     plt.xlabel("time")
     plt.ylabel("distance")
+
+    plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.4)
+
     plt.show()
 
 
@@ -152,7 +155,7 @@ def test(theta):
     f_const = 8.89644 #2 lbs of force
 
     dt = .0005
-    max_iter = math.floor(30/dt)
+    max_iter = math.floor(2.5/dt)
 
     avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
 
@@ -236,6 +239,6 @@ def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
 if __name__ == '__main__':
-    #rtest(test)
+    rtest(test)
     #print('mtest')
-    otest(50)
+    #otest(50)
