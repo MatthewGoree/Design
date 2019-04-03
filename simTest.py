@@ -95,17 +95,17 @@ def rtest(sim_test):
     plt.subplot(2,2,2)
     plt.plot(a["time"], a["avel"])
     plt.xlabel("time (s)")
-    plt.ylabel("avel")
+    plt.ylabel("avel (rad/s)")
 
     plt.subplot(2,2,3)
     plt.plot(a["time"], a["dv"])
-    plt.xlabel("time")
-    plt.ylabel("dv")
+    plt.xlabel("time (s)")
+    plt.ylabel("dv (rad/s)")
 
     plt.subplot(2,2,4)
     plt.plot(a["time"], a["distance"])
-    plt.xlabel("time")
-    plt.ylabel("distance")
+    plt.xlabel("time (s)")
+    plt.ylabel("distance (m)")
 
     plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.4)
 
@@ -183,7 +183,7 @@ def test(theta):
     #magnets = [(0, 8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
-    magnets = [(0,8.89644), (math.pi/2, -8.89644)]
+    magnets = [(0,2*8.89644)] #, (math.pi/2, -8.89644)]
     
     for i in range(1,max_iter):
 
@@ -192,11 +192,11 @@ def test(theta):
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
-        f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
+        #f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         
         # no negative needed for the new style 
         #f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
-        f = f1 + f2
+        f = f1 #+ f2
         
         '''
         if f1 or f2 and i % 10000 > 9999:
