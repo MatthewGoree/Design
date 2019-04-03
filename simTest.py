@@ -20,7 +20,7 @@ def sas_solver(theta, r, gap):
     b = r + gap
     c = r
     dist = math.sqrt(b**2 + c**2 - 2*b*c*math.cos(theta))
-    phi = math.atan( (r*(1-math.cos(theta)) + gap) / dist )
+    phi = math.asin( (r*(1-math.cos(theta)) + gap) / dist )
 
     return dist, phi
 
@@ -48,19 +48,30 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
         if rel_theta < 0:
             rel_theta += 2*math.pi 
 
-        if rel_theta < math.pi:
+        # sas solver needs everything between 0 and pi 
+        if rel_theta < math.pi / 2: # pull 
             dist, phi = sas_solver(rel_theta, r, gap)
-        else:
+        elif rel_theta > math.pi/2 and rel_theta <= math.pi: # push 
+            dist, phi = sas_solver(math.pi - rel_theta, r, gap)
+        elif rel_theta > math.pi and rel_theta <= 3*math.pi /2: # pull
             dist, phi = sas_solver(rel_theta - math.pi, r, gap)
+        else: # push
+            dist, phi = sas_solver(2*math.pi - rel_theta, r, gap)
 
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
             f_sum += -1 * math.fabs( f_const * math.cos(phi) / (dist**2  * 7067))
+            #print('neg')
+            #print(rel_theta)
+            #print(f_sum)
             #f_sum  += -1 * math.fabs(math.cos(rel_theta)) * f_const
 
         elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
             f_sum += math.fabs( f_const * math.cos(phi) / (dist**2  * 7067) )
+            #print('pos')
+            #print(rel_theta)
             # f_sum  += math.fabs(math.cos(rel_theta)) * f_const
+            #print(f_sum)
 
     return f_sum
 
@@ -178,10 +189,14 @@ def test(theta):
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
-        f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
+        f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
+        
+        # no negative needed for the new style 
+        #f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         f = f1 + f2
+        
         '''
-        if f1 or f2:
+        if f1 or f2 and i % 10000 > 9999:
             print('_____it begins____')
             print('theta1:', theta * 180/math.pi)
             print('theta2:', theta * 180/math.pi + 90)
