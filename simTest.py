@@ -87,27 +87,35 @@ def rtest(sim_test):
     print('Final distance: ', a["distance"][-1])
     print('Final avel', a["avel"][-1])
 
-    plt.subplot(2,2,1)
+    plt.subplot(3,3,1)
     plt.plot(a["time"], a["theta"])
     plt.xlabel("time (s)")
     plt.ylabel("Theta (rad)")
 
-    plt.subplot(2,2,2)
+    plt.subplot(3,3,2)
     plt.plot(a["time"], a["avel"])
     plt.xlabel("time (s)")
     plt.ylabel("avel (rad/s)")
 
-    plt.subplot(2,2,3)
+    plt.subplot(3,3,3)
     plt.plot(a["time"], a["dv"])
     plt.xlabel("time (s)")
     plt.ylabel("dv (rad/s)")
 
-    plt.subplot(2,2,4)
+    plt.subplot(3,3,4)
     plt.plot(a["time"], a["distance"])
     plt.xlabel("time (s)")
     plt.ylabel("distance (m)")
 
-    plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.4)
+    plt.subplot(3,3,5)
+    
+    values = [math.fabs(i) for i in a["force"][-5020:-4950]]
+    plt.plot(a["theta"][-5020:-4950], values)
+    plt.xlabel("Theta (rad)")
+    plt.ylabel("force (N)")
+
+
+    plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.7)
 
     plt.show()
 
@@ -157,7 +165,9 @@ def test(theta):
     dt = .0005
     max_iter = math.floor(2.5/dt)
 
-    avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
+    #avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
+
+    avel = 1000 * math.pi/30 # 15000 rpm to rad/sec
 
     # for testing 
     #avel =  2 * (13/5) * math.pi 
@@ -169,6 +179,7 @@ def test(theta):
     all_theta = [theta]
     all_avel = [avel]
     all_dv = [0]
+    all_f = [0]
     
     # aero drag values
     air_density = 1.225
@@ -197,6 +208,8 @@ def test(theta):
         # no negative needed for the new style 
         #f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         f = f1 #+ f2
+
+        all_f.append(f)
         
         '''
         if f1 or f2 and i % 10000 > 9999:
@@ -233,7 +246,7 @@ def test(theta):
     # r probably out of date here 
     all_distance = [distance(i,prop_rad) for i in all_theta]
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
-            "distance" : all_distance, "dv" : all_dv}
+            "distance" : all_distance, "dv" : all_dv, "force": all_f}
 
 def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
