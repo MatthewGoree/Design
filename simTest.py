@@ -16,7 +16,18 @@ def distance(theta, radius):
     else:
         print(deg)
 
-def magnetForce(theta, magnets, magnet_range):
+def sas_solver(theta, r, gap):
+    b = r + gap
+    c = r
+    dist = math.sqrt(b**2 + c**2 - 2*b*c*math.cos(theta))
+    phi = math.atan( (r*(1-math.cos(theta)) + gap) / dist )
+
+    return dist, phi
+
+
+
+
+def magnetForce(theta, magnets, magnet_range, r, gap):
     # assuming all magnets come in pairs 
     # magnet thetas should include the angle from 0 the first magnet is placed at 
     # magnet range is assumed to be the same for all 
@@ -37,12 +48,19 @@ def magnetForce(theta, magnets, magnet_range):
         if rel_theta < 0:
             rel_theta += 2*math.pi 
 
+        if rel_theta < math.pi:
+            dist, phi = sas_solver(rel_theta, r, gap)
+        else:
+            dist, phi = sas_solver(rel_theta - math.pi, r, gap)
+
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
-            f_sum  += -1 * math.fabs(math.cos(rel_theta)) * f_const
+            f_sum += -1 * math.fabs( f_const * math.cos(phi) / (dist**2  * 7067))
+            #f_sum  += -1 * math.fabs(math.cos(rel_theta)) * f_const
 
         elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
-            f_sum  += math.fabs(math.cos(rel_theta)) * f_const
+            f_sum += math.fabs( f_const * math.cos(phi) / (dist**2  * 7067) )
+            # f_sum  += math.fabs(math.cos(rel_theta)) * f_const
 
     return f_sum
 
@@ -132,6 +150,8 @@ def test(theta):
 
     magnet_range = math.pi/6
 
+    gap  = .01
+
     all_theta = [theta]
     all_avel = [avel]
     all_dv = [0]
@@ -149,7 +169,7 @@ def test(theta):
     #magnets = [(0, 8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
-    magnets = [(0,8.89644)] #, (math.pi/2, -8.89644)]
+    magnets = [(0,8.89644), (math.pi/2, -8.89644)]
     
     for i in range(1,max_iter):
 
@@ -157,10 +177,9 @@ def test(theta):
         avel = avel * .9963
 
         # this f is now the sum of forces 
-        f1 = magnetForce(theta, magnets, magnet_range)
-        f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range)
+        f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
+        f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         f = f1 + f2
-
         '''
         if f1 or f2:
             print('_____it begins____')
@@ -202,6 +221,6 @@ def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
 if __name__ == '__main__':
-    rtest(test)
+    #rtest(test)
     #print('mtest')
     otest(50)
