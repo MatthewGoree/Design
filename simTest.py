@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import random as rand
 import numpy as np
+from mpl_toolkits import mplot3d
 
 def distance(theta, radius):
     deg = theta * 180 / math.pi
@@ -24,7 +25,46 @@ def sas_solver(theta, r, gap):
 
     return dist, phi
 
+def force_profile(sim_data):
+    tol = 1e-15
+    force = sim_data["force"]
+    time = sim_data["time"]
 
+    markers = [i for i in range(len(force) - 1) if (math.fabs(force[i]) < tol and math.fabs(force[i+1]) > tol)]
+    f1 = force[markers[0] : markers[2]]
+    t1 = time[markers[0] : markers[2]]
+
+    force = force[markers[0]:]
+    time = time[markers[0]:]
+    all_f = []
+    all_t = []
+    f_c = []
+    t_c = []
+
+    save_flag = False
+    for i in range(len(force)-1):
+        if math.fabs(force[i]) > tol:
+            save_flag = True
+            f_c.append(force[i])
+            t_c.append(time[i])
+        elif save_flag == True:
+            all_f.append(f_c)
+            all_t.append(t_c)
+            f_c = []
+            t_c = []
+            save_flag = False
+        
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+
+    for i in range(len(all_t)):
+        zline = [i for j in range(len(all_t[i]))]
+        ax.plot3D(all_t[i],zline,all_f[i])
+    plt.show()
+    
+    
+
+    return (all_t,all_f)
 
 
 def magnetForce(theta, magnets, magnet_range, r, gap):
@@ -109,10 +149,14 @@ def rtest(sim_test):
 
     plt.subplot(3,3,5)
     
-    values = [math.fabs(i) for i in a["force"][-5020:-4950]]
-    plt.plot(a["theta"][-5020:-4950], values)
-    plt.xlabel("Theta (rad)")
-    plt.ylabel("force (N)")
+    #values = [math.fabs(i) for i in a["force"][-5020:-4950]]
+    #plt.plot(a["theta"][-5020:-4950], values)
+    #plt.xlabel("Theta (rad)")
+    #plt.ylabel("force (N)")
+
+    plt.plot(a["time"], a["force"])
+    plt.xlabel("time (s)")
+    plt.ylabel("Force (N)")
 
 
     plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.7)
@@ -163,7 +207,7 @@ def test(theta):
     f_const = 8.89644 #2 lbs of force
 
     dt = .0005
-    max_iter = math.floor(2.5/dt)
+    max_iter = math.floor(30/dt)
 
     #avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
 
@@ -172,7 +216,8 @@ def test(theta):
     # for testing 
     #avel =  2 * (13/5) * math.pi 
 
-    magnet_range = math.pi/6
+    #magnet_range = math.pi/6
+    magnet_range = math.pi/2.5
 
     gap  = .01
 
@@ -199,7 +244,8 @@ def test(theta):
     for i in range(1,max_iter):
 
         #Friction
-        avel = avel * .9963
+        #avel = avel * .9963
+        avel = avel * .99963
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
@@ -252,6 +298,8 @@ def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
 if __name__ == '__main__':
-    rtest(test)
+    a = test(math.pi/3)
+    t,f = force_profile(a)
+    #rtest(test)
     #print('mtest')
     #otest(50)
