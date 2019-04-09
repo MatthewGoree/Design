@@ -25,6 +25,8 @@ def sas_solver(theta, r, gap):
 
     return dist, phi
 
+
+
 def force_profile(sim_data):
     tol = 1e-15
     force = sim_data["force"]
@@ -65,6 +67,48 @@ def force_profile(sim_data):
     
 
     return (all_t,all_f)
+
+def force_over_cycle():
+    thetas = range(0,3610,1)
+    forces = []
+    motor_rad = .089 / 2 #meters
+    magnet_range = math.pi/2.5
+    gap  = .01
+    magnets = [(0,2*8.89644)] #, (math.pi/2, -8.89644)]
+
+    cartesian_x = []
+    cartesian_y = []
+
+    thetas = [ x / 10 for x in thetas]
+
+    for theta in thetas:
+        
+        rad_theta = theta * math.pi / 180
+
+        if (rad_theta >= 2 * math.pi):
+            rad_theta = rad_theta % (2*math.pi)
+        if (rad_theta < 0):
+            rad_theta += 2 * math.pi
+
+        force = magnetForce(rad_theta, magnets, magnet_range, motor_rad, gap)
+        forces.append(force)
+
+        x = math.cos(rad_theta) * force
+        y = math.sin(rad_theta) * force
+
+        cartesian_x.append(x)
+        cartesian_y.append(y)
+
+  
+
+    plt.plot(thetas, forces)
+    plt.show()
+
+    plt.plot(cartesian_x,cartesian_y)
+    plt.title('Magnitude of Y Force Expressed Radially')
+    plt.show()
+
+
 
 
 def magnetForce(theta, magnets, magnet_range, r, gap):
@@ -300,6 +344,7 @@ def save_data(test, fname):
 if __name__ == '__main__':
     a = test(math.pi/3)
     t,f = force_profile(a)
+    force_over_cycle()
     #rtest(test)
     #print('mtest')
     #otest(50)
