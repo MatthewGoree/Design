@@ -253,9 +253,11 @@ def test(theta):
     dt = .0005
     max_iter = math.floor(30/dt)
 
-    #avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
+    avel = 15000 * math.pi/30 # 15000 rpm to rad/sec
 
-    avel = 1000 * math.pi/30 # 15000 rpm to rad/sec
+    #avel = 1000 * math.pi/30 # 15000 rpm to rad/sec
+
+    #avel = 40 #video test
 
     # for testing 
     #avel =  2 * (13/5) * math.pi 
@@ -263,7 +265,7 @@ def test(theta):
     #magnet_range = math.pi/6
     magnet_range = math.pi/2.5
 
-    gap  = .01
+    gap  = .1
 
     all_theta = [theta]
     all_avel = [avel]
@@ -277,19 +279,31 @@ def test(theta):
     Cd_front = .01
     Cd_back = .34
 
+    
     # magnet = (offset_angle, f_const)
 
     #magnets = [(0, 8.89644), (math.pi/6, 8.89644/4), (math.pi - math.pi/6, 8.89644/4)]
     #magnets = [(0, 8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
-    magnets = [(0,2*8.89644)] #, (math.pi/2, -8.89644)]
+    magnets = [(0,2*8.89644)]#, (math.pi/2, -8.89644)]
+    
+
+    LINEAR_FINISH = True
     
     for i in range(1,max_iter):
 
         #Friction
-        #avel = avel * .9963
-        avel = avel * .99963
+        if LINEAR_FINISH:
+            if avel > 30:
+                avel = avel * .99955
+            elif (avel > 0.0001):
+                avel = avel - 12.8 * dt
+        else:
+            avel = avel * .99955
+            #avel = avel - .4246 * dt
+        
+        #avel = avel * .99963
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
@@ -342,9 +356,14 @@ def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
 if __name__ == '__main__':
-    a = test(math.pi/3)
-    t,f = force_profile(a)
-    force_over_cycle()
+    #a = test(math.pi/3)
+    #t,f = force_profile(a)
+    #force_over_cycle()
     #rtest(test)
     #print('mtest')
     #otest(50)
+    video_test = test(2*math.pi/180)
+    vel = video_test["avel"]
+    time = video_test["time"][0:len(vel)]
+    plt.plot(time,vel)
+    plt.show()
