@@ -21,7 +21,15 @@ def sas_solver(theta, r, gap):
     b = r + gap
     c = r
     dist = math.sqrt(b**2 + c**2 - 2*b*c*math.cos(theta))
-    phi = math.asin( (r*(1-math.cos(theta)) + gap) / dist )
+    
+    ratio = (r*(1-math.cos(theta)) + gap) / dist 
+
+    # fix comp errors
+    if 1 < ratio < 1.0000001:
+        ratio = 1
+
+
+    phi = math.asin( ratio )
 
     return dist, phi
 
@@ -100,12 +108,16 @@ def force_over_cycle():
         cartesian_y.append(y)
 
   
-
+    plt.title('Magnetic Force During Full Cycle')
+    plt.xlabel('Angle [degrees]')
+    plt.ylabel('Pulling force [N]')
     plt.plot(thetas, forces)
     plt.show()
 
     plt.plot(cartesian_x,cartesian_y)
-    plt.title('Magnitude of Y Force Expressed Radially')
+    plt.xlabel('Pulling Force [N]')
+    plt.ylabel('Pulling force [N]')
+    plt.title('Polar Magnitude of Y Force')
     plt.show()
 
 
@@ -124,6 +136,8 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
 
         magnet_offset = magnet[0]
         f_const = magnet[1]
+
+        f_const = f_const * gap**2 # f const that is entered is actually the pulling force
 
         # get theta value relative to the magnet (original should not have theta change)
         rel_theta = theta - magnet_offset
@@ -144,14 +158,14 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
 
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
-            f_sum += -1 * math.fabs( f_const * math.cos(phi) / (dist**2  * 7067))
+            f_sum += -1 * math.fabs( f_const * math.cos(phi) / (dist**2))
             #print('neg')
             #print(rel_theta)
             #print(f_sum)
             #f_sum  += -1 * math.fabs(math.cos(rel_theta)) * f_const
 
         elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
-            f_sum += math.fabs( f_const * math.cos(phi) / (dist**2  * 7067) )
+            f_sum += math.fabs( f_const * math.cos(phi) / (dist**2) )
             #print('pos')
             #print(rel_theta)
             # f_sum  += math.fabs(math.cos(rel_theta)) * f_const
@@ -249,6 +263,8 @@ def test(theta):
     I = prop_I + motor_I
 
     f_const = 8.89644 #2 lbs of force
+    f_const = 8.89644 #2 lbs of force
+    
 
     dt = .0005
     max_iter = math.floor(30/dt)
@@ -265,7 +281,7 @@ def test(theta):
     #magnet_range = math.pi/6
     magnet_range = math.pi/2.5
 
-    gap  = .1
+    gap  = .015
 
     all_theta = [theta]
     all_avel = [avel]
@@ -286,7 +302,7 @@ def test(theta):
     #magnets = [(0, 8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
-    magnets = [(0,2*8.89644)]#, (math.pi/2, -8.89644)]
+    magnets = [(0,.5*31.1376), (math.pi/2, -.5*31.1376)]
     
 
     LINEAR_FINISH = True
@@ -307,7 +323,7 @@ def test(theta):
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
-        #f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
+        f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         
         # no negative needed for the new style 
         #f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
@@ -358,12 +374,12 @@ def save_data(test, fname):
 if __name__ == '__main__':
     #a = test(math.pi/3)
     #t,f = force_profile(a)
-    #force_over_cycle()
+    force_over_cycle()
     #rtest(test)
     #print('mtest')
-    #otest(50)
-    video_test = test(2*math.pi/180)
-    vel = video_test["avel"]
-    time = video_test["time"][0:len(vel)]
-    plt.plot(time,vel)
-    plt.show()
+    #otest(360)
+    #video_test = test(2*math.pi/180)
+    #vel = video_test["avel"]
+    #time = video_test["time"][0:len(vel)]
+    #plt.plot(time,vel)
+    #plt.show()
