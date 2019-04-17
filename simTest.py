@@ -404,6 +404,21 @@ def test(theta):
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
             "distance" : all_distance, "dv" : all_dv, "force": all_f}
 
+def save_animation_data(test,fname,frame_rate=60):
+    #CUTS OUT ALL POINTS THAT DON'T LIE ON FRAME TIMESTEP
+    #saves file as csv with two columns, time and theta
+    #frame_rate = fps value, 
+    
+    time = test["time"]
+    angles = test["theta"]
+    dt = time[1] - time[0]
+    datapoints_per_frame = int(1 / (frame_rate * dt)
+
+    animation_time = [time[i * datapoints_per_frame] for i in range(int(len(time)/datapoints_per_frame))]
+    animation_angles = [angles[i * datapoints_per_frame] for i in range(int(len(angles)/datapoints_per_frame))]
+    np.savetxt(fname,np.c_[animation_time,animation_angles],delimiter=',')
+    
+    
 def save_data(test, fname):
     np.savetxt(fname, np.c_[test["time"], test["theta"], test["distance"]], delimiter = ',')
 
@@ -413,7 +428,7 @@ if __name__ == '__main__':
     #force_over_cycle()
     #rtest(test)
     #print('mtest')
-    otest(60)
+    #otest(60)
     #video_test = test(2*math.pi/180)
     #vel = video_test["avel"]
     #time = video_test["time"][0:len(vel)]
