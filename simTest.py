@@ -330,7 +330,7 @@ def test(theta):
     # magnet = (offset_angle, f_const)
 
     #magnets = [(0, 8.89644), (math.pi/6, 8.89644/4), (math.pi - math.pi/6, 8.89644/4)]
-    #magnets = [(0, 8.89644)]
+    #magnets = [(0, 10*8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
     #magnets = [(0,1.8*31.1376)] #, (math.pi/2, -.5*31.1376)]
@@ -412,7 +412,7 @@ def save_animation_data(test,fname,frame_rate=60):
     time = test["time"]
     angles = test["theta"]
     dt = time[1] - time[0]
-    datapoints_per_frame = int(1 / (frame_rate * dt)
+    datapoints_per_frame = int(1 / (frame_rate * dt))
 
     animation_time = [time[i * datapoints_per_frame] for i in range(int(len(time)/datapoints_per_frame))]
     animation_angles = [angles[i * datapoints_per_frame] for i in range(int(len(angles)/datapoints_per_frame))]
