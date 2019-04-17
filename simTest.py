@@ -36,7 +36,7 @@ def sas_solver(theta, r, gap):
 
 
 def force_profile(sim_data):
-    tol = 1e-15
+    tol = 1e-4
     force = sim_data["force"]
     time = sim_data["time"]
 
@@ -80,9 +80,13 @@ def force_over_cycle():
     thetas = range(0,3610,1)
     forces = []
     motor_rad = .089 / 2 #meters
-    magnet_range = math.pi/2.5
+    magnet_range = math.pi/2
     gap  = .01
-    magnets = [(0,2*8.89644)] #, (math.pi/2, -8.89644)]
+    #magnets = [(-math.pi/8,2*8.89644),(0,2*8.89644),(math.pi/8,2*8.89644) ] #, (math.pi/2, -8.89644)]
+
+    magnets = make_cont_magnet(90, 10, 1.8*31.1376)
+
+    #print(magnets)
 
     cartesian_x = []
     cartesian_y = []
@@ -98,6 +102,8 @@ def force_over_cycle():
         if (rad_theta < 0):
             rad_theta += 2 * math.pi
 
+        #print(rad_theta)
+
         force = magnetForce(rad_theta, magnets, magnet_range, motor_rad, gap)
         forces.append(force)
 
@@ -108,19 +114,18 @@ def force_over_cycle():
         cartesian_y.append(y)
 
   
-    plt.title('Magnetic Force During Full Cycle')
+    plt.title('Magnetic Force During Full Cycle-')
     plt.xlabel('Angle [degrees]')
     plt.ylabel('Pulling force [N]')
     plt.plot(thetas, forces)
     plt.show()
-
+    '''
     plt.plot(cartesian_x,cartesian_y)
     plt.xlabel('Pulling Force [N]')
     plt.ylabel('Pulling force [N]')
     plt.title('Polar Magnitude of Y Force')
     plt.show()
-
-
+    '''
 
 
 def magnetForce(theta, magnets, magnet_range, r, gap):
@@ -145,6 +150,11 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
         # make sure the relative angle is between 0 and 2*pi 
         if rel_theta < 0:
             rel_theta += 2*math.pi 
+        if (rel_theta >= 2 * math.pi):
+            rel_theta = rel_theta % (2*math.pi)
+    
+
+        #print(rel_theta * 180 / math.pi)
 
         # sas solver needs everything between 0 and pi 
         if rel_theta < math.pi / 2: # pull 
@@ -243,6 +253,27 @@ def otest(n):
     print("{0}%".format(len(s) * 100 / len(results)))
     return results
 
+# mag_range: how high up you want magnets in degrees, ex: 30 
+# drange: spacing between magnets in degrees (high drange the close to a continous magnet) ex: 5
+# force: pull force you want distributed over the magnets, ex: 10 
+# This thing can also make the sim take a longgg time to run 
+def make_cont_magnet(mag_range, drange, force):
+    magnets = []
+    num_mags = round(mag_range/drange)
+    # trigger if even
+    if not num_mags % 2:
+        num_mags += 1 
+
+    max_force = force/mag_range * drange
+
+    magnets = [(0,max_force)]
+    for i in range(1, num_mags):
+        magnets.append( (i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
+        magnets.insert(0, (-i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
+
+    #print(magnets)
+    return magnets 
+
 
 def test(theta):
     #performs a sim with given starting angle
@@ -279,7 +310,7 @@ def test(theta):
     #avel =  2 * (13/5) * math.pi 
 
     #magnet_range = math.pi/6
-    magnet_range = math.pi/2.5
+    magnet_range = math.pi/2
 
     gap  = .015
 
@@ -302,8 +333,11 @@ def test(theta):
     #magnets = [(0, 8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
-    magnets = [(0,.5*31.1376), (math.pi/2, -.5*31.1376)]
-    
+    #magnets = [(0,1.8*31.1376)] #, (math.pi/2, -.5*31.1376)]
+
+    magnets = make_cont_magnet(60, 5, 1.8*31.1376)
+    #magnets = [(-math.pi/8,2*8.89644),(0,2*8.89644),(math.pi/8,2*8.89644) ]
+    #magnets = [(0,31.1376), (math.pi/8, .4*31.1376 ),(-math.pi/8, .4*31.1376 )]
 
     LINEAR_FINISH = True
     
@@ -315,6 +349,8 @@ def test(theta):
                 avel = avel * .99955
             elif (avel > 0.0001):
                 avel = avel - 12.8 * dt
+            elif (avel < 0 and avel>-30):
+                avel = avel + 12.8 * dt
         else:
             avel = avel * .99955
             #avel = avel - .4246 * dt
@@ -323,7 +359,7 @@ def test(theta):
 
         # this f is now the sum of forces 
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
-        f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
+        #f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
         
         # no negative needed for the new style 
         #f2 = -1 * magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
@@ -374,12 +410,13 @@ def save_data(test, fname):
 if __name__ == '__main__':
     #a = test(math.pi/3)
     #t,f = force_profile(a)
-    force_over_cycle()
+    #force_over_cycle()
     #rtest(test)
     #print('mtest')
-    #otest(360)
+    otest(60)
     #video_test = test(2*math.pi/180)
     #vel = video_test["avel"]
     #time = video_test["time"][0:len(vel)]
     #plt.plot(time,vel)
     #plt.show()
+    
