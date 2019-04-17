@@ -330,12 +330,12 @@ def test(theta):
     # magnet = (offset_angle, f_const)
 
     #magnets = [(0, 8.89644), (math.pi/6, 8.89644/4), (math.pi - math.pi/6, 8.89644/4)]
-    #magnets = [(0, 10*8.89644)]
+    magnets = [(0, 10*8.89644)]
     #magnets = [(0,8.89644), (math.pi/6,-8.89644/4), (math.pi/6 + math.pi, -8.89644/4)]
 
     #magnets = [(0,1.8*31.1376)] #, (math.pi/2, -.5*31.1376)]
 
-    magnets = make_cont_magnet(60, 5, 1.8*31.1376)
+    #magnets = make_cont_magnet(60, 5, 1.8*31.1376)
     #magnets = [(-math.pi/8,2*8.89644),(0,2*8.89644),(math.pi/8,2*8.89644) ]
     #magnets = [(0,31.1376), (math.pi/8, .4*31.1376 ),(-math.pi/8, .4*31.1376 )]
 
@@ -411,6 +411,19 @@ def save_animation_data(test,fname,frame_rate=60):
     
     time = test["time"]
     angles = test["theta"]
+    avel_tol = .01
+    avel = test["avel"]
+    
+    for i in range(len(avel)- 10):
+        avel_group = [math.fabs(i) for i in avel[i:i+10]]
+        
+        if sum(avel_group) < avel_tol:
+            last_index = i + frame_rate # add one second of video with no motion
+            break
+
+    time = time[0:last_index]
+    angles = angles[0:last_index]
+    
     dt = time[1] - time[0]
     datapoints_per_frame = int(1 / (frame_rate * dt))
 
@@ -434,4 +447,4 @@ if __name__ == '__main__':
     #time = video_test["time"][0:len(vel)]
     #plt.plot(time,vel)
     #plt.show()
-    
+    print("test")
