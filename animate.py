@@ -3,20 +3,35 @@ import math
 from mathutils import Vector
 import numpy as np
 import os
+import sys
 
-DATA_PATH = r"C:\Users\mattg\OneDrive\Documents\Design\DesignRepo\2mag8.csv"
-RENDER_PATH = r"C:\Users\mattg\OneDrive\Documents\Design\DesignRepo\output.avi"
+#DEFAULT COMMAND WITH NO PATHS SPECIFIED HAS 5 ARGS
+if len(sys.argv) == 5:
+    DATA_PATH = r"C:\Users\mattg\OneDrive\Documents\Design\DesignRepo\2mag8.csv"
+    RENDER_PATH = r"C:\Users\mattg\OneDrive\Documents\Design\DesignRepo\output.avi"
+else:
+    DATA_PATH = sys.argv[-2]
+    RENDER_PATH = os.path.join(os.getcwd(),sys.argv[-1])
+
+
+print(sys.argv)
+print(DATA_PATH)
+print(RENDER_PATH)
+
 AUTO_RENDER = True
 
 # useful shortcut
 scene = bpy.context.scene
 
 #render settings
-scene.render.image_settings.file_format = 'AVI_RAW'
+scene.render.image_settings.file_format = 'FFMPEG'
+scene.render.ffmpeg.format = 'MPEG4'
+scene.render.ffmpeg.codec = "H264"
+scene.render.image_settings.color_mode = 'RGB'
+scene.render.resolution_percentage = 50
 scene.render.filepath = RENDER_PATH
 
 # Finding objects 
-scene.objects.keys()
 prop_name = 'full propeller - Standard Blade-1'
 motor_name = "KDE8218XF-120KV.001"
 prop = scene.objects[prop_name]
@@ -32,6 +47,7 @@ else:
 data = np.genfromtxt(DATA_PATH,usecols=(0,1), delimiter=',')
 angles = [i[1] for i in data]
 times = [i[0] for i in data]
+
 
 ### animation
 positions_prop = [( math.pi/2,0,i) for i in angles]
@@ -61,4 +77,5 @@ scene.frame_start = 0
 scene.frame_end = len(positions_prop) - 1
 #render
 if AUTO_RENDER:
+    print(scene.render.filepath)
     bpy.ops.render.render(animation=True)
