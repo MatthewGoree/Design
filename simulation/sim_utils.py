@@ -139,7 +139,7 @@ def cont_mag_plts(systemDetailsOg):
     for magnet in magnets:
         force_sum += math.fabs(magnet[1])
     
-    systemDetails["magents"] = [(0,force_sum)]
+    systemDetails["magnets"] = [(0,force_sum)]
     theta0, torque0 = torque_over_cycle(systemDetails)
     print('0')
     magDeg = [(magnet[0] * 180/math.pi, magnet[1]) for magnet in systemDetails["magnets"]]
@@ -241,3 +241,21 @@ def failzone_per_pull(systemDetails):
         plt.plot(f_x,f_y,'ro')
         plt.plot(s_x,s_y,'bo')
         plt.show()
+
+def save_animation_data(test,fname,frame_rate=60):
+    #CUTS OUT ALL POINTS THAT DON'T LIE ON FRAME TIMESTEP
+    #saves file as csv with two columns, time and theta
+    #frame_rate = fps value, 
+    
+    time = test["time"]
+    angles = test["theta"]
+    forces = test["force"]
+
+    dt = time[1] - time[0]
+    datapoints_per_frame = int(1 / (frame_rate * dt))
+
+    animation_time = [time[i * datapoints_per_frame] for i in range(int(len(time)/datapoints_per_frame))]
+    animation_angles = [angles[i * datapoints_per_frame] for i in range(int(len(angles)/datapoints_per_frame))]
+    animation_forces = [forces[i * datapoints_per_frame] for i in range(int(len(forces)/datapoints_per_frame))]
+    np.savetxt(fname,np.c_[animation_time,animation_angles, animation_forces],delimiter=',')
+
