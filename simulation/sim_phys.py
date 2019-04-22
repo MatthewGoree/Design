@@ -81,7 +81,7 @@ def make_cont_magnet(mag_range, drange, force):
     max_force = force/mag_range * drange
 
     magnets = [(0,max_force)]
-    for i in range(1, num_mags):
+    for i in range(1, num_mags+1):
         magnets.append( (i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
         magnets.insert(0, (-i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
 
@@ -169,7 +169,7 @@ def torque_over_cycle(systemDetails, polar=False):
     thetas = range(0,3610,1)
     torques = []
     motor_rad = systemDetails["motor_rad"]
-    magnet_range = systemDetails["mag_range"]
+    magnet_range = systemDetails["magnet_range"]
     gap  = systemDetails["gap"]
     magnets = systemDetails["magnets"]
     cartesian_x = []

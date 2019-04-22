@@ -20,10 +20,15 @@ systemDetails = {
     "prop_I": 0.004064 * 2,
     "magnet_range": math.pi/2,
     "gap": .015,
-    "magnets": [(0, 10*8.89644)]
+    "magnets": [(0, 13)] # about 5.2 lbs
+    #"magnets": [(0, 10*8.89644)]
 }
 systemDetails["prop_rad"] = systemDetails["prop_length"] / 2
-systemDetails["motor_I"] = systemDetails["motor_mass"] * systemDetails["motor_mass"]**2 / 2
+systemDetails["motor_I"] = systemDetails["motor_mass"] * systemDetails["motor_rad"]**2 / 2
 systemDetails["I"] =  systemDetails["motor_I"] + systemDetails["prop_I"]
 
-sim_utils.otest(60, systemDetails)
+#sim_utils.otest(60, systemDetails)
+#sim_utils.rtest(systemDetails)
+#sim_utils.cont_mag_plts(systemDetails)
+#sim_utils.succ_per_pull(systemDetails)
+sim_utils.failzone_per_pull(systemDetails)
