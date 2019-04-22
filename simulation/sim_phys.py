@@ -81,7 +81,7 @@ def make_cont_magnet(mag_range, drange, force):
     max_force = force/mag_range * drange
 
     magnets = [(0,max_force)]
-    for i in range(1, num_mags+1):
+    for i in range(1, num_mags):
         magnets.append( (i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
         magnets.insert(0, (-i*drange * (math.pi/180), max_force - max_force*i*drange/mag_range ) )
 

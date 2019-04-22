@@ -31,4 +31,5 @@ systemDetails["I"] =  systemDetails["motor_I"] + systemDetails["prop_I"]
 #sim_utils.rtest(systemDetails)
 #sim_utils.cont_mag_plts(systemDetails)
 #sim_utils.succ_per_pull(systemDetails)
-sim_utils.failzone_per_pull(systemDetails)
+#sim_utils.failzone_per_pull(systemDetails)
+sim_utils.detailed_cont_mag_plts(systemDetails)
