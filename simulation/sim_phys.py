@@ -95,9 +95,11 @@ def test(theta, systemDetails):
     magnet_range = systemDetails["magnet_range"]
     gap  = systemDetails["gap"]
     magnets = systemDetails["magnets"]
-
+    systemDetails["duration"]
+    
+    
     dt = .0005
-    max_iter = math.floor(30/dt)
+    max_iter = math.floor(systemDetails["duration"]/dt)
 
     avel = 360 * math.pi/30 # 360 rpm to rad/sec
 
@@ -106,6 +108,7 @@ def test(theta, systemDetails):
     all_avel = [avel]
     all_dv = [0]
     all_f = [0]
+    all_torque = []
     
     # aero drag values
     air_density = 1.225
@@ -144,6 +147,8 @@ def test(theta, systemDetails):
         #aero_torque = (air_density * v**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_length /4
 
         torque = f * motor_rad #+ aero_torque
+        all_torque.append(torque)
+        
         dv = torque * dt / I
 
         all_dv.append(dv)
@@ -163,7 +168,7 @@ def test(theta, systemDetails):
     all_distance = [distance(i,prop_rad) for i in all_theta]
 
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
-            "distance" : all_distance, "dv" : all_dv, "force": all_f}
+            "distance" : all_distance, "dv" : all_dv, "force": all_f, "torque" : all_torque}
 
 def torque_over_cycle(systemDetails, polar=False):
     thetas = range(0,3610,1)
