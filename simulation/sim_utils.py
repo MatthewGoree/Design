@@ -3,6 +3,7 @@ from mpl_toolkits import mplot3d
 import math
 from sim_phys import test, torque_over_cycle, make_cont_magnet
 import random as rand
+import numpy as np
 
 def force_profile(sim_data):
     tol = 1e-4
