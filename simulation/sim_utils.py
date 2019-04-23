@@ -5,6 +5,16 @@ from sim_phys import test, torque_over_cycle, make_cont_magnet
 import random as rand
 import numpy as np
 
+def torque_profile(systemDetails):
+    thetas, torques = torque_over_cycle(systemDetails)
+    plt.figure()
+    plt.plot(thetas, torques , 'r')
+    plt.grid(True)
+    plt.xlabel('Leading Magnet Angle [Degrees]')
+    plt.ylabel('Torque [Nm]')
+    plt.show()
+
+
 def force_profile(sim_data):
     tol = 1e-4
     force = sim_data["force"]

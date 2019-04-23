@@ -25,7 +25,7 @@ def sas_solver(theta, r, gap):
         ratio = 1
     phi = math.asin( ratio )
 
-    return dist, phi
+    return dist, theta-phi
 
 def magnetForce(theta, magnets, magnet_range, r, gap):
     # assuming all magnets come in pairs 
@@ -54,20 +54,23 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
     
         # sas solver needs everything between 0 and pi 
         if rel_theta < math.pi / 2: # pull 
-            dist, phi = sas_solver(rel_theta, r, gap)
+            dist, gamma = sas_solver(rel_theta, r, gap)
         elif rel_theta > math.pi/2 and rel_theta <= math.pi: # push 
-            dist, phi = sas_solver(math.pi - rel_theta, r, gap)
+            dist, gamma = sas_solver(math.pi - rel_theta, r, gap)
         elif rel_theta > math.pi and rel_theta <= 3*math.pi /2: # pull
-            dist, phi = sas_solver(rel_theta - math.pi, r, gap)
+            dist, gamma = sas_solver(rel_theta - math.pi, r, gap)
         else: # push
-            dist, phi = sas_solver(2*math.pi - rel_theta, r, gap)
+            dist, gamma = sas_solver(2*math.pi - rel_theta, r, gap)
 
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
-            f_sum += -1 * math.fabs( f_const * math.cos(phi) / (dist**2))
+            f_sum += -1 * math.fabs( f_const * math.cos(gamma) / (dist**2))
+            #f_sum += -1 * math.fabs( f_const / (dist**2))
 
         elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
-            f_sum += math.fabs( f_const * math.cos(phi) / (dist**2) )
+            f_sum += math.fabs( f_const * math.cos(gamma) / (dist**2))
+            #f_sum += math.fabs( f_const / (dist**2) )
+
 
     return f_sum
 
@@ -95,13 +98,12 @@ def test(theta, systemDetails):
     magnet_range = systemDetails["magnet_range"]
     gap  = systemDetails["gap"]
     magnets = systemDetails["magnets"]
-    systemDetails["duration"]
     
     
     dt = .0005
     max_iter = math.floor(systemDetails["duration"]/dt)
 
-    avel = 360 * math.pi/30 # 360 rpm to rad/sec
+    avel = systemDetails["start_rpm"] * math.pi/30 # 360 rpm to rad/sec
 
 
     all_theta = [theta]
@@ -110,12 +112,13 @@ def test(theta, systemDetails):
     all_f = [0]
     all_torque = []
     
-    # aero drag values
-    air_density = 1.225
-    v = 26.8
-    A = 6.4 * 100**-2
-    Cd_front = .01
-    Cd_back = .34
+    if systemDetails["in_flight"]: 
+        # aero drag values
+        air_density = 1.225
+        v = 26.8
+        A = 6.4 * 100**-2
+        Cd_front = .01
+        Cd_back = .34
 
     LINEAR_FINISH = True
     
@@ -141,12 +144,14 @@ def test(theta, systemDetails):
         f = f1 #+ f2
 
         all_f.append(f)
-        
-        #Aero Torque = force_back * half length of prop - force_front * half length of prop
-        # Cd is adjusted for angle with the cos 
-        #aero_torque = (air_density * v**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_length /4
-
         torque = f * motor_rad #+ aero_torque
+        
+        if systemDetails["in_flight"]: 
+            #Aero Torque = force_back * half length of prop - force_front * half length of prop
+            #Cd is adjusted for angle with the cos 
+            aero_torque = (air_density * (v+avel)**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_rad /2
+            torque = + aero_torque
+        
         all_torque.append(torque)
         
         dv = torque * dt / I
