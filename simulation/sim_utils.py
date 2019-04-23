@@ -3,6 +3,7 @@ from mpl_toolkits import mplot3d
 import math
 from sim_phys import test, torque_over_cycle, make_cont_magnet
 import random as rand
+import numpy as np
 
 def force_profile(sim_data):
     tol = 1e-4
@@ -249,13 +250,13 @@ def save_animation_data(test,fname,frame_rate=60):
     
     time = test["time"]
     angles = test["theta"]
-    forces = test["force"]
+    torques = test["torque"]
 
     dt = time[1] - time[0]
     datapoints_per_frame = int(1 / (frame_rate * dt))
 
     animation_time = [time[i * datapoints_per_frame] for i in range(int(len(time)/datapoints_per_frame))]
     animation_angles = [angles[i * datapoints_per_frame] for i in range(int(len(angles)/datapoints_per_frame))]
-    animation_forces = [forces[i * datapoints_per_frame] for i in range(int(len(forces)/datapoints_per_frame))]
-    np.savetxt(fname,np.c_[animation_time,animation_angles, animation_forces],delimiter=',')
+    animation_torques = [torques[i * datapoints_per_frame] for i in range(int(len(torques)/datapoints_per_frame))]
+    np.savetxt(fname,np.c_[animation_time,animation_angles, animation_torques],delimiter=',')
 
