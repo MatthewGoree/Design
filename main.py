@@ -22,7 +22,10 @@ systemDetails = {
     "magnet_range": math.pi/3,
     "gap": .015,
     "magnets": [(0, 13)], # about 5.2 lbs,
-    "duration" : 400
+    "duration" : 30,
+    "start_rpm": 360,
+    "in_flight": False,
+    "magForce": 1
     #"magnets": [(0, 10*8.89644)]
 }
 systemDetails["prop_rad"] = systemDetails["prop_length"] / 2
@@ -32,10 +35,10 @@ systemDetails["I"] =  systemDetails["motor_I"] + systemDetails["prop_I"]
 #sim_utils.otest(60, systemDetails)
 #sim_utils.rtest(systemDetails)
 #sim_utils.cont_mag_plts(systemDetails)
-#sim_utils.succ_per_pull(systemDetails)
+sim_utils.succ_per_pull(systemDetails)
 #sim_utils.failzone_per_pull(systemDetails)
 #sim_utils.detailed_cont_mag_plts(systemDetails)
-systemDetails["magnets"] = [(0,29)]
-a = sim_utils.otest(60, systemDetails)
+#systemDetails["magnets"] = [(0,29)]
+#a = sim_utils.otest(60, systemDetails)
 #a = sim_utils.test(math.pi/2,systemDetails)
 #sim_utils.save_animation_data(a,"29long.csv")

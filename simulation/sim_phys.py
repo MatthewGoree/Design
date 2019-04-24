@@ -40,8 +40,9 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
 
         magnet_offset = magnet[0]
         f_const = magnet[1]
-
-        f_const = f_const * gap**2 # f const that is entered is actually the pulling force
+        n_const = f_const/(gap**-3.882) * 7.2
+        f_const = f_const * gap**2 * 5.4# f const that is entered is actually the pulling force
+        #f_const = 1.7 * f_const * gap**2 # f const that is entered is actually the pulling force
 
         # get theta value relative to the magnet (original should not have theta change)
         rel_theta = theta - magnet_offset
@@ -62,15 +63,14 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
         else: # push
             dist, gamma = sas_solver(2*math.pi - rel_theta, r, gap)
 
+
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
-            f_sum += -1 * math.fabs( f_const * math.cos(gamma) / (dist**2))
-            #f_sum += -1 * math.fabs( f_const / (dist**2))
-
+            #f_sum += -1 * math.fabs( f_const * math.cos(gamma) / (dist**2))
+            f_sum += -1 * math.fabs( n_const *  dist**-3.882 * math.cos(gamma) )
         elif (rel_theta > 2*math.pi - magnet_range) or ((rel_theta < math.pi) and rel_theta > math.pi - magnet_range):
-            f_sum += math.fabs( f_const * math.cos(gamma) / (dist**2))
-            #f_sum += math.fabs( f_const / (dist**2) )
-
+            #f_sum += math.fabs( f_const * math.cos(gamma) / (dist**2))
+            f_sum += math.fabs( n_const *  dist**-3.882 * math.cos(gamma))
 
     return f_sum
 
@@ -112,16 +112,19 @@ def test(theta, systemDetails):
     all_f = [0]
     all_torque = []
     
+    
     if systemDetails["in_flight"]: 
         # aero drag values
         air_density = 1.225
         v = 26.8
         A = 6.4 * 100**-2
-        Cd_front = .01
-        Cd_back = .34
+        Cd_front = -.03
+        Cd_back = .03
+    
 
     LINEAR_FINISH = True
     
+
     for i in range(1,max_iter):
 
         #Friction
@@ -135,7 +138,7 @@ def test(theta, systemDetails):
         else:
             avel = avel * .99955
 
-        # this f is now the sum of forces 
+        # this f is now the sum of forces
         f1 = magnetForce(theta, magnets, magnet_range, motor_rad, gap)
 
         #f2 = magnetForce(theta + math.pi/2, magnets, magnet_range, motor_rad, gap)
@@ -146,12 +149,14 @@ def test(theta, systemDetails):
         all_f.append(f)
         torque = f * motor_rad #+ aero_torque
         
+        
         if systemDetails["in_flight"]: 
             #Aero Torque = force_back * half length of prop - force_front * half length of prop
             #Cd is adjusted for angle with the cos 
-            aero_torque = (air_density * (v+avel)**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_rad /2
+            aero_torque = (air_density * (v+math.sin(theta)* avel*prop_rad/2)**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_rad /2
             torque = + aero_torque
         
+
         all_torque.append(torque)
         
         dv = torque * dt / I
@@ -175,8 +180,8 @@ def test(theta, systemDetails):
     return {"time" : all_t, "theta" : all_theta, "avel" : all_avel,
             "distance" : all_distance, "dv" : all_dv, "force": all_f, "torque" : all_torque}
 
-def torque_over_cycle(systemDetails, polar=False):
-    thetas = range(0,3610,1)
+def torque_over_cycle(systemDetails, start_angle=0, finish_angle=360, polar=False):
+    thetas = range(start_angle*10,finish_angle*10 + 10,10)
     torques = []
     motor_rad = systemDetails["motor_rad"]
     magnet_range = systemDetails["magnet_range"]
@@ -205,6 +210,9 @@ def torque_over_cycle(systemDetails, polar=False):
         cartesian_x.append(x)
         cartesian_y.append(y)
 
+
+    if (polar == False and start_angle != 0):
+        thetas = [theta - start_angle for theta in thetas]
     if polar == True:
         return cartesian_x,cartesian_y
     else:

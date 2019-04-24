@@ -20,13 +20,20 @@ systemDetails = {
     "prop_I": 0.004064 * 2,
     "magnet_range": math.pi/2,
     "gap": .015,
-    "magnets": [(0, 4.4)], # about 5.2 lbs,
-    "duration" : 400,
+    "magnets": [(0, 4.4)], #1.9127)], # about 5.2 lbs,
+    "duration" : 120,
     "start_rpm": 360,
-    "in_flight": False
+    "in_flight": False,
 }
 systemDetails["prop_rad"] = systemDetails["prop_length"] / 2
 systemDetails["motor_I"] = systemDetails["motor_mass"] * systemDetails["motor_rad"]**2 / 2
 systemDetails["I"] =  systemDetails["motor_I"] + systemDetails["prop_I"]
 
-sim_utils.torque_profile(systemDetails, 90, 360+90)
+
+#print(sim_utils.theta_test(90, systemDetails, short=True))
+# torque curve comparison 
+#sim_utils.torque_profile(systemDetails, 90, 360+90)
+#sim_utils.failzone_per_pull(systemDetails)
+sim_utils.succ_per_pull(systemDetails)
+
+

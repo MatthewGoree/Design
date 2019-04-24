@@ -5,11 +5,11 @@ from sim_phys import test, torque_over_cycle, make_cont_magnet
 import random as rand
 import numpy as np
 
-def torque_profile(systemDetails):
-    thetas, torques = torque_over_cycle(systemDetails)
-    plt.figure()
+def torque_profile(systemDetails, start_angle, finish_angle):
+    thetas, torques = torque_over_cycle(systemDetails, start_angle, finish_angle)
+    print(max(torques))
     plt.plot(thetas, torques , 'r')
-    plt.grid(True)
+    plt.title('Simulation Torque Profile', fontsize=20)
     plt.xlabel('Leading Magnet Angle [Degrees]')
     plt.ylabel('Torque [Nm]')
     plt.show()
@@ -218,42 +218,46 @@ def cont_mag_plts(systemDetailsOg):
     plt.show()
 
 def succ_per_pull(systemDetails):
-    pullForces = [ i for i in range(0,60,2)]
-    n = 90
+    pullForces = [ i for i in range(0,210,10)]
+    pullForces = [force/10 for force in pullForces]
+    n = 180
     res = []
     for force in pullForces:
         systemDetails["magnets"] = [(0,force)]
         res.append(theta_test(n, systemDetails, short=True))
+        print('Force: ', force, ', Succ Rate: ', res[-1])
 
     plt.figure()
     plt.plot(pullForces, res)
+    plt.title('Magnet Strength Profile', fontsize=20)
     plt.xlabel('Pull Force [N]')
     plt.ylabel('Success Rate %')
     plt.show()
 
 def failzone_per_pull(systemDetails, alone=False):
-    pullForces = [ i for i in range(0,60,5)]
+    pullForces = [ i for i in range(0,60,20)]
     n = 90
+    succ_thetas = []
+    failed_thetas = []
     for force in pullForces:
-        f_x = []
-        f_y = []
-        s_x = []
-        s_y = []
         systemDetails["magnets"] = [(0,force)]
         rate, s_thetas, f_thetas = theta_test(n, systemDetails)
-        for f_theta in f_thetas:
-            f_x.append(math.cos(f_theta))
-            f_y.append(math.sin(f_theta))
-        for s_theta in s_thetas:
-            s_x.append(math.cos(s_theta))
-            s_y.append(math.sin(s_theta))
+        succ_thetas.append(s_thetas)
+        failed_thetas.append(f_thetas)
+   
+    f1, axes = plt.subplots(3,2,subplot_kw=dict(polar=True)) # sharex = True, sharey = True)
+    f1.text(0.05, 0.5, 'Torque [Nm]', ha='center', va='center', rotation='vertical')
+    #plt.suptitle('Torque During Cycle with ' + str(rate) + ' [N] Combined Pull Force')
         
-        plt.figure(1)
-        plt.title('Pull Force: ' + str(force) + ' [N] |'+ 'Success Rate: ' + str(rate))
-        plt.plot(f_x,f_y,'ro')
-        plt.plot(s_x,s_y,'bo')
-        plt.show()
-     
+    for i in range(0,6):
+        x = math.floor(i/2)
+        y = i % 2
+        r_s = [1 for j in succ_thetas[i]]
+        r_f = [1 for k in failed_thetas[i]]
+        axes[x,y].plot(succ_thetas[i],r_s, 'bo')
+        axes[x,y].plot(failed_thetas[i],r_f, 'ro')
+    plt.show()
+
 def failzone(s, f):
     f_x = []
     f_y = []
