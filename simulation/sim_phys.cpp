@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "sim_structs.h"
+#include "sim_fea.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ int main(){
   OutputStruct data;
 
   data = test(0, sd);
-
+  test_print();
   return 0;
 }
 
@@ -42,7 +43,12 @@ OutputStruct test(float theta, SystemDetails sd)
   float dt = 0.0005;
   int max_iter = floor(sd.duration / dt);
   float avel = 360 * M_PI / 30;
-  float *all_theta, *all_distance, *all_t, *all_avel, *all_f, *all_torque = new float[max_iter];
+  float *all_theta = new float[max_iter];
+  float *all_distance = new float[max_iter];
+  float *all_t = new float[max_iter];
+  float *all_avel = new float[max_iter];
+  float *all_f = new float[max_iter];
+  float *all_torque = new float[max_iter];
   float torque, dv;
   // aero drag values
   float air_density = 1.225;
@@ -60,14 +66,13 @@ OutputStruct test(float theta, SystemDetails sd)
 
   for (int i = 1; i < max_iter; i++)
     {
+
       //Friction
       if (LINEAR_FINISH == true)
         {
           if (avel > 30) avel = avel * .99955;
           else if (avel > 0.0001) avel = avel - 12.8 * dt;
           else if (avel < 0 && avel > -30) avel = avel + 12.8 * dt;
-
-
         }
       else avel = avel * .99955;
 
