@@ -8,6 +8,7 @@ using namespace std;
 
 float find_success_rate(int n, SystemDetails sd)
 {
+  /*
   float max_succ_dist = (5/180) *M_PI * sd.prop_rad;
   float final_dist;
   int succ_cnt = 0;
@@ -23,8 +24,10 @@ float find_success_rate(int n, SystemDetails sd)
           succ_cnt++;
       }
   }
+  
+  return (float) succ_cnt/n;*/
 
-  return (float) succ_cnt/n;
+  return 1.0;
 }
 
 void write_data(char *filename, OutputStruct data)
@@ -66,6 +69,5 @@ Magnet createMagnet(float offset, float fConst)
   magnet.fConst = fConst;
   return magnet;
 };
-
 
 

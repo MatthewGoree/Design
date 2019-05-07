@@ -3,7 +3,7 @@
 #include <cmath>
 
 int main(){
-
+  printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 13;
@@ -18,6 +18,7 @@ int main(){
   sd.magnets = all_mags;
   sd.duration = 40;
   float rate1;
+  printf("about to find success rate\n");
   rate1 = find_success_rate(60,sd);
   printf("Check it: %f\n", rate1);
   return 0;
