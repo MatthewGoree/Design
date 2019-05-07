@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 simulation/__pycache__/
+simulation/sim_phys
 animation/__pycache__/
 *.py[cod]
