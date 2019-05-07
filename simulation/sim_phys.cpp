@@ -11,33 +11,6 @@ void sas_solver(float theta, float r, float gap, float &dist, float &phi);
 float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnet_count);
 OutputStruct test(float theta, SystemDetails systemDetails);
 float distance(float theta, float radius);
-/*
-int main(){
-
-  Magnet mag;
-  mag.offset = 0;
-  mag.fConst = 13;
-
-  Magnet *all_mags = new Magnet[1];
-  all_mags[0] = mag;
-
-  SystemDetails sd;
-  //sd.motor_mass = .845;
-  sd.prop_rad = 0.7;
-  sd.motor_rad = .089 / 2;
-  sd.I = 0.004064 * 2 + .845 * (.089/2) * (.089 / 2) /2 ;
-  sd.magnet_range = M_PI / 3;
-  sd.gap = 0.015;
-  sd.magnets = all_mags;
-  sd.duration = 40;
-
-  OutputStruct data;
-
-  data = test(0, sd);
-  test_print();
-  return 0;
-}
-*/
 
 OutputStruct test(float theta, SystemDetails sd)
 {
