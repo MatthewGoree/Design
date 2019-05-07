@@ -9,8 +9,8 @@ using namespace std;
 float find_success_rate(int n, SystemDetails sd)
 {
   
-  float max_succ_dist = (5/180) *M_PI * sd.prop_rad;
-  float final_dist;
+  float max_succ_theta = (5.0/180) * M_PI;
+  float final_theta;
   int succ_cnt = 0;
 
   OutputStruct temp_data;
@@ -18,13 +18,16 @@ float find_success_rate(int n, SystemDetails sd)
   for(int i = 1; i<n+1; i++)
   {
       temp_data = test(i*2*M_PI/n, sd);
-      final_dist = temp_data.all_distance[temp_data.length-1];
-      if(fabs(final_dist)<max_succ_dist)
+      final_theta = temp_data.all_theta[temp_data.length-1];
+      printf("final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
+      if(fabs(final_theta)<max_succ_theta || fabs(final_theta-M_PI)<max_succ_theta || fabs(final_theta-2*M_PI) < max_succ_theta)
       {
           succ_cnt++;
       }
   }
   
+  
+
   return (float) succ_cnt/n;
   
 }

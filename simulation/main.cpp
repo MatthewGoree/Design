@@ -20,8 +20,8 @@ int main(){
   sd.duration = 40;
   float rate1;
   //printf("about to find success rate\n");
-  rate1 = find_success_rate(1,sd);
-  printf("Check it: %f\n", rate1);
+  rate1 = find_success_rate(60,sd);
+  printf("Check it: %f\n", rate1*100);
 
   printf("running test and writing to file\n");
 
