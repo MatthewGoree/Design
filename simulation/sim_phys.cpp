@@ -94,7 +94,7 @@ OutputStruct test(float theta, SystemDetails sd)
 
 float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnetCount)
 {
-  float magnet_offset, f_const, rel_theta, dist, phi, f_sum;
+  float magnet_offset, f_const, rel_theta, dist, phi, f_sum = 0;
 
   for (int i = 0; i < magnetCount; i++)
     {

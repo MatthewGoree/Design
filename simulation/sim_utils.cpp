@@ -39,8 +39,8 @@ void write_data(char *filename, OutputStruct data)
 
   for (int i = 0; i < data.length; i++)
     {
-      outfile << data.all_t[i] << "," << data.all_theta << "," <<
-        data.all_distance << "\n";      
+      outfile << data.all_t[i] << "," << data.all_theta[i] << "," <<
+        data.all_distance[i] << "\n";      
     }
   outfile.close();
   

@@ -4,6 +4,7 @@ simulation/__pycache__/
 simulation/sim_phys
 simulation/sim_phys.o
 simulation/sim_utils.o
+simulation/*.csv
 simulation/main.o
 simulation/a.out
 animation/__pycache__/
