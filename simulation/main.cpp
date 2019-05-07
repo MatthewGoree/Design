@@ -1,5 +1,6 @@
 #include <iostream>
 #include "sim_utils.h"
+#include "sim_phys.h"
 #include <cmath>
 
 int main(){
@@ -21,6 +22,12 @@ int main(){
   printf("about to find success rate\n");
   rate1 = find_success_rate(60,sd);
   printf("Check it: %f\n", rate1);
+
+  printf("running test and writing to file\n");
+
+  OutputStruct data = test(0,sd);
+  write_data("data1.csv", data);
+  printf("Wrote to data1.csv\n");
   return 0;
 }
 

@@ -80,12 +80,14 @@ OutputStruct test(float theta, SystemDetails sd)
       all_theta[i] = theta;
       all_avel[i] = avel;
       all_t[i] = i * dt;
+      all_distance[i] = distance(theta, sd.prop_rad);
     }
 
   OutputStruct data;
   data.length = max_iter;
   data.all_theta = all_theta;
   data.all_t = all_t;
+  data.all_distance = all_distance;
   return data;
 
 }
