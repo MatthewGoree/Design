@@ -53,9 +53,9 @@ OutputStruct test(float theta, SystemDetails sd)
   // aero drag values
   float air_density = 1.225;
   float v = 26.8;
-  float A = 6.4 * pow(100,-2);
-  float Cd_front = 0.1;
-  float Cd_back = .34;
+  float A = .03726039;
+  float Cd_front = 0.0651667;
+  float Cd_back = .0626377;
 
   all_theta[0] = theta;
   all_t[0] = 0;
@@ -80,6 +80,19 @@ OutputStruct test(float theta, SystemDetails sd)
 
       all_f[i] = f1;
       torque = f1 * sd.motor_rad;
+
+      // aero force section 
+      float front_force, back_force, total_aero_force, aero_torque;
+
+      front_force = air_density * Cd_front * A * pow(v+avel*sd.prop_rad/2 * cos(theta) , 2) / 2;
+      back_force = air_density * Cd_back * A * pow(v-avel*sd.prop_rad/2 * cos(theta) , 2) / 2;
+
+      total_aero_force = (back_force - front_force) * cos(theta);
+      aero_torque = total_aero_force * cos(theta) * sd.prop_rad / 2;
+      
+      torque += aero_torque;
+
+
       all_torque[i] = torque;
 
       dv = torque * dt / sd.I;
@@ -98,6 +111,7 @@ OutputStruct test(float theta, SystemDetails sd)
   OutputStruct data;
   data.all_theta = all_theta;
   data.all_t = all_t;
+  return data;
 
 }
 
