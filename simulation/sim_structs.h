@@ -19,6 +19,7 @@ struct OutputStruct
   float *all_t;
   float *all_theta;
   float *all_distance;
+  int length;
 };
 
 struct SystemDetails

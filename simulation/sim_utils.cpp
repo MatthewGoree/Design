@@ -1,4 +1,5 @@
 #include <cmath>
+#include <fstream>
 
 float find_success_rate(int n, SystemDetails sd)
 {
@@ -22,4 +23,21 @@ float find_success_rate(int n, SystemDetails sd)
   float A = .03726039;
   float Cd_front = 0.0651667;
   float Cd_back = .0626377;*/
+}
+
+void write_data(char *filename, OutputStruct data)
+{
+  
+  ofstream outfile;
+  outfile.open(filename);
+
+  outfile << "time,theta,distance\n";
+
+  for (int i = 0; i < data.length; i++)
+    {
+      outfile << data.all_t[i] << "," << data.all_theta << "," <<
+        data.all_distance << "\n";      
+    }
+  outfile.close();
+  
 }

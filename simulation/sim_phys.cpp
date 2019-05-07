@@ -1,6 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include "sim_structs.h"
+#include "sim_utils.h"
 #include "sim_fea.h"
 
 using namespace std;
@@ -109,6 +110,7 @@ OutputStruct test(float theta, SystemDetails sd)
     }
 
   OutputStruct data;
+  data.length = max_iter;
   data.all_theta = all_theta;
   data.all_t = all_t;
   return data;
