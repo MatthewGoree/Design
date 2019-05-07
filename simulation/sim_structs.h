@@ -7,6 +7,13 @@ struct Magnet
   float fConst;
 };
 
+Magnet createMagnet(float offset, float fConst)
+{
+  Magnet magnet;
+  magnet.offset = offset;
+  magnet.fConst = fConst;
+  return magnet;
+}
 struct OutputStruct
 {
   float *all_t;

@@ -10,7 +10,7 @@ void sas_solver(float theta, float r, float gap, float &dist, float &phi);
 float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnet_count);
 OutputStruct test(float theta, SystemDetails systemDetails);
 float distance(float theta, float radius);
-
+void make_cont_magnet(float mag_range, float drange, float force, Magnet *magnets);
 
 int main(){
 
@@ -153,4 +153,19 @@ float distance(float theta, float radius)
   if ((deg > 90) && (deg <= 180)) return (M_PI - theta) * radius;
   if ((deg > 180) && (deg <= 270)) return (M_PI - theta) * radius;
   else return -100000000000;
+}
+
+void make_cont_magnet(float mag_range, float drange, float force, Magnet *magnets)
+{
+  int num_mags = round(mag_range / drange);
+  if (num_mags % 2 != 0) num_mags += 1;
+
+  float max_force = force / mag_range * drange;
+
+  magnets[0] = createMagnet(0, max_force);
+  for (int i = 1; i <  num_mags; i++)
+    {
+      magnets[2 * i - 1] = createMagnet(i * drange * M_PI / 180, max_force - max_force * i * drange / mag_range);
+      magnets[2 * i] = createMagnet(-1 * i * drange * M_PI / 180, max_force - max_force * i * drange / mag_range);
+    }
 }
