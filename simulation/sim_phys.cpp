@@ -51,9 +51,11 @@ OutputStruct test(float theta, SystemDetails sd)
       else avel = avel * .99955;
 
       float f1 = magnetForce(theta, sd.magnets, sd.magnet_range, sd.motor_rad, sd.gap, sd.magnet_count);
-
+     
       all_f[i] = f1;
       torque = f1 * sd.motor_rad;
+      //if (i==1) printf("NEW TEST\n");
+      //if (i<10) printf("magent force: %f \n", f1);
 
       // aero force section 
       float front_force, back_force, total_aero_force, aero_torque;
@@ -71,9 +73,11 @@ OutputStruct test(float theta, SystemDetails sd)
 
       dv = torque * dt / sd.I;
       avel += dv;
-      theta = theta + avel * dv;
+      theta = theta + avel * dt;
 
       //reset theta to between 0 and 2pi
+      //if (i<1000) printf("theta: %f \n", theta);
+
       if (theta >= 2 * M_PI) theta = theta - floor(theta / (2*M_PI)) * 2 * M_PI;
       if (theta < 0) theta += 2 * M_PI;
 

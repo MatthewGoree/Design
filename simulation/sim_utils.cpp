@@ -15,7 +15,7 @@ float find_success_rate(int n, SystemDetails sd)
 
   OutputStruct temp_data;
 
-  for(int i = 0; i<n; i++)
+  for(int i = 1; i<n+1; i++)
   {
       temp_data = test(i*2*M_PI/n, sd);
       final_dist = temp_data.all_distance[temp_data.length-1];
