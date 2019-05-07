@@ -140,11 +140,10 @@ def theta_test(n, systemDetails, short=False):
     else:
         return [rate, s, f]
 
-def cont_mag_plts(systemDetailsOg):
+def cont_mag_plts(systemDetailsOg, n=180):
     # takes total amount of magnets and shows what distributed magnets will look like
     systemDetails = systemDetailsOg.copy()
     magnets = systemDetails["magnets"]
-    n = 180
 
     force_sum = 0
     for magnet in magnets:
@@ -158,23 +157,23 @@ def cont_mag_plts(systemDetailsOg):
     #rtest(systemDetails)
     res0 = otest(n, systemDetails, short=True)
 
-    systemDetails["magnets"] = make_cont_magnet(15, 5, force_sum)
+    systemDetails["magnets"] = make_cont_magnet(10, 5, force_sum)
     theta15, torque15 = torque_over_cycle(systemDetails)
-    print('15')
+    print('8')
     magDeg = [(magnet[0] * 180/math.pi, magnet[1]) for magnet in systemDetails["magnets"]]
     print('Magnets: ', magDeg)
     #rtest(systemDetails)
     res15 = otest(n, systemDetails, short=True)
 
-    systemDetails["magnets"] = make_cont_magnet(30, 10, force_sum)
+    systemDetails["magnets"] = make_cont_magnet(20, 10, force_sum)
     theta30, torque30 = torque_over_cycle(systemDetails)
-    print('30')
+    print('10')
     magDeg = [(magnet[0] * 180/math.pi, magnet[1]) for magnet in systemDetails["magnets"]]
     print('Magnets: ', magDeg)
     #rtest(systemDetails)
     res30 = otest(n, systemDetails, short=True)
 
-    systemDetails["magnets"] = make_cont_magnet(45, 15, force_sum)
+    systemDetails["magnets"] = make_cont_magnet(30, 10, force_sum)
     theta45, torque45 = torque_over_cycle(systemDetails)
     print('45')
     magDeg = [(magnet[0] * 180/math.pi, magnet[1]) for magnet in systemDetails["magnets"]]
@@ -182,13 +181,15 @@ def cont_mag_plts(systemDetailsOg):
     #rtest(systemDetails)
     res45 = otest(n, systemDetails, short=True)
 
-    systemDetails["magnets"] = make_cont_magnet(60, 15, force_sum)
+    
+    systemDetails["magnets"] = make_cont_magnet(40, 10, force_sum)
     theta60, torque60 = torque_over_cycle(systemDetails)
     print('60')
     magDeg = [(magnet[0] * 180/math.pi, magnet[1]) for magnet in systemDetails["magnets"]]
     print('Magnets: ', magDeg)
     #rtest(systemDetails)
     res60 = otest(n, systemDetails, short=True)
+    
 
     f1, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(5,1, sharex = True, sharey = True)
     f1.text(0.05, 0.5, 'Torque [Nm]', ha='center', va='center', rotation='vertical')
@@ -197,30 +198,31 @@ def cont_mag_plts(systemDetailsOg):
     ax1.set_title('Success Rate: ' + str(res0) + '%', loc='left')
     ax1.legend(loc='lower right')
     
-    ax2.plot(theta15, torque15, 'g', label='30 Degrees')
+    ax2.plot(theta15, torque15, 'g', label='20 Degrees')
     ax2.legend(loc='lower right')
     ax2.set_title('Success Rate: ' + str(res15) + '%', loc='left')
 
-    ax3.plot(theta30, torque30, 'r', label='60 Degrees')
+    ax3.plot(theta30, torque30, 'r', label='40 Degrees')
     ax3.legend(loc='lower right')
     ax3.set_title('Success Rate: ' + str(res30) + '%', loc='left')
 
-    ax4.plot(theta45, torque45, 'y', label='90 Degrees')
+    ax4.plot(theta45, torque45, 'y', label='60 Degrees')
     ax4.legend(loc='lower right')
     ax4.set_title('Success Rate: ' + str(res45) + '%', loc='left')
 
-    ax5.plot(theta60, torque60, 'c', label='120 Degrees')
+    
+    ax5.plot(theta60, torque60, 'c', label='80 Degrees')
     ax5.legend(loc='lower right')
     ax5.set_title('Success Rate: ' + str(res60) + '%', loc='left')
+
 
     plt.xlabel('Leading Angle [Degrees]')
     plt.subplots_adjust(left=0.125, right = 0.9, bottom=.1, top=.9, wspace=.4, hspace=.7)
     plt.show()
 
-def succ_per_pull(systemDetails):
-    pullForces = [ i for i in range(0,210,10)]
+def succ_per_pull(systemDetails, endForce=20, n=180):
+    pullForces = [ i for i in range(0,endForce*10+10,1)]
     pullForces = [force/10 for force in pullForces]
-    n = 180
     res = []
     for force in pullForces:
         systemDetails["magnets"] = [(0,force)]
@@ -234,8 +236,30 @@ def succ_per_pull(systemDetails):
     plt.ylabel('Success Rate %')
     plt.show()
 
+def succ_per_pull_aero(systemDetails, endForce=20, n=180):
+    pullForces = [ i for i in range(0,endForce*10+10,10)]
+    pullForces = [force/10 for force in pullForces]
+    res = []
+    res_aero = []
+    for force in pullForces:
+        systemDetails["in_flight"] = False
+        systemDetails["magnets"] = [(0,force)]
+        res.append(theta_test(n, systemDetails, short=True))
+        systemDetails["in_flight"] = True
+        res_aero.append(theta_test(n, systemDetails, short=True))
+        print('Force: ', force, ', Succ Rate: ', res[-1] ,', Succ Rate w Aero: ', res_aero[-1])
+
+    plt.figure()
+    plt.plot(pullForces, res, label='Static')
+    plt.plot(pullForces, res_aero, 'r', label='In Flight')
+    plt.title('Static and In-Flight Success', fontsize=20)
+    plt.xlabel('Pull Force [N]')
+    plt.ylabel('Success Rate %')
+    plt.legend()
+    plt.show()
+
 def failzone_per_pull(systemDetails, alone=False):
-    pullForces = [ i for i in range(0,60,20)]
+    pullForces = [ i for i in range(0,12,2)]
     n = 90
     succ_thetas = []
     failed_thetas = []
@@ -257,6 +281,28 @@ def failzone_per_pull(systemDetails, alone=False):
         axes[x,y].plot(succ_thetas[i],r_s, 'bo')
         axes[x,y].plot(failed_thetas[i],r_f, 'ro')
     plt.show()
+
+def plot_failzone(systemDetails, n):
+    print(systemDetails["magnets"])
+    systemDetails['in_flight'] = False
+    rate1, succ_thetas, failed_thetas = theta_test(n, systemDetails)
+    r_s = [1 for j in succ_thetas]
+    r_f = [1 for k in failed_thetas]
+    f1, axes = plt.subplots(1,2,subplot_kw=dict(polar=True)) # sharex = True, sharey = True)
+    axes[0].plot(succ_thetas, r_s, 'bo')
+    axes[0].plot(failed_thetas, r_f, 'ro')
+    '''systemDetails['in_flight'] = True'''
+    systemDetails['magnets'] = [(systemDetails["magnets"][0][0], systemDetails["magnets"][0][1]+3 )]
+    rate2, succ_thetas, failed_thetas = theta_test(n, systemDetails)
+    r_s = [1 for j in succ_thetas]
+    r_f = [1 for k in failed_thetas]
+    axes[1].plot(succ_thetas, r_s, 'bo')
+    axes[1].plot(failed_thetas, r_f, 'ro')
+    plt.suptitle('Pull Force: ' + str(systemDetails["magnets"][0][1]-3) + ' , Pull Force: ' + str(systemDetails["magnets"][0][1]))
+
+    plt.show()
+
+   
 
 def failzone(s, f):
     f_x = []

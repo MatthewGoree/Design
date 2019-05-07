@@ -41,7 +41,7 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
         magnet_offset = magnet[0]
         f_const = magnet[1]
         n_const = f_const/(gap**-3.882) * 7.2
-        f_const = f_const * gap**2 * 5.4# f const that is entered is actually the pulling force
+        f_const = f_const * gap**2 * 3.4# f const that is entered is actually the pulling force
         #f_const = 1.7 * f_const * gap**2 # f const that is entered is actually the pulling force
 
         # get theta value relative to the magnet (original should not have theta change)
@@ -62,7 +62,6 @@ def magnetForce(theta, magnets, magnet_range, r, gap):
             dist, gamma = sas_solver(rel_theta - math.pi, r, gap)
         else: # push
             dist, gamma = sas_solver(2*math.pi - rel_theta, r, gap)
-
 
         # magnetic force 
         if (rel_theta < magnet_range) or ((rel_theta < math.pi + magnet_range) and (rel_theta > math.pi)):
@@ -98,13 +97,11 @@ def test(theta, systemDetails):
     magnet_range = systemDetails["magnet_range"]
     gap  = systemDetails["gap"]
     magnets = systemDetails["magnets"]
-    
+    linear = not systemDetails["testing"]
     
     dt = .0005
     max_iter = math.floor(systemDetails["duration"]/dt)
-
     avel = systemDetails["start_rpm"] * math.pi/30 # 360 rpm to rad/sec
-
 
     all_theta = [theta]
     all_avel = [avel]
@@ -112,29 +109,43 @@ def test(theta, systemDetails):
     all_f = [0]
     all_torque = []
     
-    
     if systemDetails["in_flight"]: 
         # aero drag values
         air_density = 1.225
         v = 26.8
-        A = 6.4 * 100**-2
-        Cd_front = -.03
-        Cd_back = .03
-    
+        A = .03726039
+        Cd_front = .0651667
+        Cd_back = .0626377
 
     LINEAR_FINISH = True
+    #linear = True # set this to true to kill prints
+    #linear = False
+    linear_start =  30 #* math.pi/30
+    linear_slope = 12.8 #* math.pi/30
+    #linear_slope = 4
+    #print('avel: ', avel)
     
-
     for i in range(1,max_iter):
 
         #Friction
         if LINEAR_FINISH:
-            if avel > 30:
+            if math.fabs(avel) > linear_start:
                 avel = avel * .99955
-            elif (avel > 0.0001):
-                avel = avel - 12.8 * dt
-            elif (avel < 0 and avel>-30):
-                avel = avel + 12.8 * dt
+            elif (avel > linear_slope*dt):
+                avel = avel - linear_slope * dt
+                if not linear:
+                    print('start+ ', dt*i)
+                    linear = True
+            elif (avel < -linear_slope * dt):
+                avel = avel + linear_slope * dt
+                if not linear:
+                    print('start- ', dt*i)
+                    linear = True
+            elif math.fabs(avel) <= linear_slope*dt:
+                avel = 0
+                if not linear:
+                    print('start0 ', dt*i) 
+                    linear = True  
         else:
             avel = avel * .99955
 
@@ -148,14 +159,24 @@ def test(theta, systemDetails):
 
         all_f.append(f)
         torque = f * motor_rad #+ aero_torque
+        #print('torque: ', torque)
         
         
         if systemDetails["in_flight"]: 
             #Aero Torque = force_back * half length of prop - force_front * half length of prop
             #Cd is adjusted for angle with the cos 
-            aero_torque = (air_density * (v+math.sin(theta)* avel*prop_rad/2)**2 * A / 2) * (Cd_back - Cd_front) * math.fabs(math.cos(theta)) * prop_rad /2
-            torque = + aero_torque
-        
+            
+            #print('front force: ', (air_density * (v+ math.sin(theta)* avel*prop_rad/2)**2 * A / 2) * (Cd_front))
+            #print('back force:', (air_density * (v+ math.sin(theta)* avel*prop_rad/2)**2 * A / 2) * (Cd_back))
+
+            front_force = air_density * Cd_front * A * (v + avel*prop_rad/2*math.cos(theta))**2 / 2
+            back_force = air_density * Cd_back * A * (v - avel*prop_rad/2*math.cos(theta))**2 / 2
+            #front_force = air_density * Cd_front * A * (v )**2 / 2
+            #back_force = air_density * Cd_back * A * (v )**2 / 2
+
+            total_aero_force = (back_force - front_force) * math.cos(theta) # adjusting for cd changes with rotating
+            aero_torque = total_aero_force * math.cos(theta) * prop_rad /2 # only want force tangent to prop
+            torque += aero_torque        
 
         all_torque.append(torque)
         

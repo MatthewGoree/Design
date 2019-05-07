@@ -25,7 +25,6 @@ systemDetails = {
     "duration" : 30,
     "start_rpm": 360,
     "in_flight": False,
-    "magForce": 1
     #"magnets": [(0, 10*8.89644)]
 }
 systemDetails["prop_rad"] = systemDetails["prop_length"] / 2
