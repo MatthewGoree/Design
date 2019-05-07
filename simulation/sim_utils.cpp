@@ -1,8 +1,9 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include "sim_structs.h"
+#include "sim_utils.h"
 #include "sim_phys.h"
+using namespace std;
 
 
 float find_success_rate(int n, SystemDetails sd)
@@ -42,3 +43,29 @@ void write_data(char *filename, OutputStruct data)
   outfile.close();
   
 }
+
+void make_cont_magnet(float mag_range, float drange, float force, Magnet *magnets)
+{
+  int num_mags = round(mag_range / drange);
+  if (num_mags % 2 != 0) num_mags += 1;
+
+  float max_force = force / mag_range * drange;
+
+  magnets[0] = createMagnet(0, max_force);
+  for (int i = 1; i <  num_mags; i++)
+    {
+      magnets[2 * i - 1] = createMagnet(i * drange * M_PI / 180, max_force - max_force * i * drange / mag_range);
+      magnets[2 * i] = createMagnet(-1 * i * drange * M_PI / 180, max_force - max_force * i * drange / mag_range);
+    }
+}
+
+Magnet createMagnet(float offset, float fConst)
+{
+  Magnet magnet;
+  magnet.offset = offset;
+  magnet.fConst = fConst;
+  return magnet;
+};
+
+
+
