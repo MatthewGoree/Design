@@ -1,28 +1,29 @@
 #include <cmath>
 #include <fstream>
+#include <iostream>
+#include "sim_structs.h"
+#include "sim_phys.h"
+
 
 float find_success_rate(int n, SystemDetails sd)
 {
-    return 0;
-  /*float max_succ_dist = (5*360) * 
+  float max_succ_dist = (5/180) *M_PI * sd.prop_rad;
+  float final_dist;
+  int succ_cnt = 0;
 
+  OutputStruct temp_data;
 
-  float dt = 0.0005;
-  int max_iter = floor(sd.duration / dt);
-  float avel = 360 * M_PI / 30;
-  float *all_theta = new float[max_iter];
-  float *all_distance = new float[max_iter];
-  float *all_t = new float[max_iter];
-  float *all_avel = new float[max_iter];
-  float *all_f = new float[max_iter];
-  float *all_torque = new float[max_iter];
-  float torque, dv;
-  // aero drag values
-  float air_density = 1.225;
-  float v = 26.8;
-  float A = .03726039;
-  float Cd_front = 0.0651667;
-  float Cd_back = .0626377;*/
+  for(int i = 0; i<n; i++)
+  {
+      temp_data = test(i*2*M_PI/n, sd);
+      final_dist = temp_data.all_distance[temp_data.length-1];
+      if(fabs(final_dist)<max_succ_dist)
+      {
+          succ_cnt++;
+      }
+  }
+
+  return (float) succ_cnt/n;
 }
 
 void write_data(char *filename, OutputStruct data)
