@@ -4,6 +4,7 @@
 #include <cmath>
 
 int main(){
+  // this is serial 
   printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
