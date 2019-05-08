@@ -78,7 +78,7 @@ OutputStruct test(float theta, SystemDetails sd)
       //reset theta to between 0 and 2pi
       //if (i<1000) printf("theta: %f \n", theta);
 
-      if (theta >= 2 * M_PI) theta = theta - floor(theta / (2*M_PI)) * 2 * M_PI;
+      if (theta >= 2 * M_PI) theta = fmod(theta, 2*M_PI);
       if (theta < 0) theta += 2 * M_PI;
 
       all_theta[i] = theta;
@@ -98,19 +98,20 @@ OutputStruct test(float theta, SystemDetails sd)
 
 float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnetCount)
 {
-  float magnet_offset, f_const, rel_theta, dist, phi, f_sum = 0;
+  float magnet_offset, f_const, n_const, rel_theta, dist, phi, f_sum = 0;
 
   for (int i = 0; i < magnetCount; i++)
     {
       magnet_offset = magnets[i].offset;
       f_const = magnets[i].fConst;
 
-      f_const = f_const * pow(gap,2);
+      //f_const = f_const * pow(gap,2);
+      n_const = f_const/pow(gap,-3.882) * 7.2;
 
       rel_theta = theta - magnet_offset;
 
       if (rel_theta < 0) rel_theta += 2 * M_PI;
-      if (rel_theta >= 2 * M_PI) rel_theta = rel_theta  - floor(rel_theta / (2*M_PI)) * (2* M_PI); //NEED TO CHECK THIS
+      if (rel_theta >= 2 * M_PI) rel_theta = fmod(rel_theta, 2*M_PI); //NEED TO CHECK THIS
 
       if (rel_theta < M_PI / 2) sas_solver(rel_theta, r, gap, dist, phi);
       else if (rel_theta > M_PI / 2 && rel_theta <= M_PI)
@@ -120,9 +121,9 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
       else sas_solver(2 * M_PI - rel_theta, r, gap, dist, phi);
 
       if ((rel_theta < magnet_range) || (rel_theta < M_PI + magnet_range && rel_theta > M_PI))
-        f_sum += -1 * fabs(f_const * cos(phi / pow(dist,2)));
+        f_sum += -1 * fabs(n_const * cos(phi) * pow(dist, -3.882));
       else if ((rel_theta > 2 * M_PI - magnet_range) || (rel_theta < M_PI && rel_theta > M_PI - magnet_range))
-        f_sum += fabs(f_const * cos(phi) / pow(dist,2));
+        f_sum += fabs(n_const * cos(phi) * pow(dist, -3.882));
     }
   return f_sum;
 }
@@ -138,8 +139,8 @@ void sas_solver(float theta, float r, float gap, float &dist, float &phi)
   if ((1 < ratio) && ratio < 1.0000001) ratio = 1;
 
   phi = asin(ratio);
+  phi = theta - phi;
 }
-
 float distance(float theta, float radius)
 {
   float deg = theta * 180 / M_PI;
