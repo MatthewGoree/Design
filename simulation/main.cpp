@@ -8,7 +8,7 @@ int main(){
   printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
-  mag.fConst = 13;
+  mag.fConst = 23;
   Magnet *all_mags = new Magnet[1];
   all_mags[0] = mag;
   SystemDetails sd;
@@ -25,6 +25,7 @@ int main(){
   printf("Check it: %f\n", rate1*100);
 
   printf("running test and writing to file\n");
+  printf("matts change\n");
 
   OutputStruct data = test(0,sd);
   char filename[] = {'d','a','t','a','1','.','c','s','v', '\0'};
