@@ -25,7 +25,7 @@ int main(){
   printf("Check it: %f\n", rate1*100);
 
   printf("running test and writing to file\n");
-  printf("matts change\n");
+  printf("matts change2\n");
 
   OutputStruct data = test(0,sd);
 

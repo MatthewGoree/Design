@@ -37,7 +37,7 @@ OutputStruct test(float theta, SystemDetails sd)
 
 
   bool LINEAR_FINISH = true;
-
+  printf("in sim_phys, about to start for loop\n");
   for (int i = 1; i < max_iter; i++)
     {
 
@@ -67,7 +67,7 @@ OutputStruct test(float theta, SystemDetails sd)
       aero_torque = total_aero_force * cos(theta) * sd.prop_rad / 2;
       
       torque += aero_torque;
-
+      
 
       all_torque[i] = torque;
 

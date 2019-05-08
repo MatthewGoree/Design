@@ -8,7 +8,7 @@ using namespace std;
 
 float find_success_rate(int n, SystemDetails sd)
 {
-  
+  printf("in sim_utils, about to find succ rate\n");
   float max_succ_theta = (5.0/180) * M_PI;
   float final_theta;
   int succ_cnt = 0;
