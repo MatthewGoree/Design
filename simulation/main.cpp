@@ -28,6 +28,7 @@ int main(){
   printf("matts change\n");
 
   OutputStruct data = test(0,sd);
+
   char filename[] = {'d','a','t','a','1','.','c','s','v', '\0'};
   write_data(filename, data);
   printf("Wrote to data1.csv\n");
