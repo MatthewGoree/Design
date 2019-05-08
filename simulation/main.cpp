@@ -11,7 +11,7 @@ int main(){
   Magnet *all_mags = new Magnet[1];
   all_mags[0] = mag;
   SystemDetails sd;
-  sd.prop_rad = 0.7 / 2; //change here
+  sd.prop_rad = 0.7/2; //change here
   sd.motor_rad = .089 / 2;
   sd.I = 0.004064 * 2 + .845 * (.089/2) * (.089 / 2) /2 ;
   sd.magnet_range = M_PI / 3;
