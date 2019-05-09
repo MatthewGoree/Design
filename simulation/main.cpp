@@ -19,6 +19,7 @@ int main(){
   sd.gap = 0.015;
   sd.magnets = all_mags;
   sd.duration = 30;
+  sd.magnet_count = 1;
   float rate1;
   //printf("about to find success rate\n");
   rate1 = find_success_rate(360,sd);

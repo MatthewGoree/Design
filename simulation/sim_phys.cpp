@@ -37,7 +37,7 @@ OutputStruct test(float theta, SystemDetails sd)
 
 
   bool LINEAR_FINISH = true;
-  printf("in sim_phys, about to start for loop\n");
+
   for (int i = 1; i < max_iter; i++)
     {
 
