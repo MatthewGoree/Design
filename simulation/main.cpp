@@ -11,7 +11,7 @@ int main(){
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 1;
-  int magnet_count = 30;
+  int magnet_count = 360;
   Magnet *all_mags = new Magnet[magnet_count];
   for (int i = 0; i < magnet_count; i++)
     {
