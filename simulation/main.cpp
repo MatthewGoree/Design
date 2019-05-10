@@ -2,15 +2,22 @@
 #include "sim_utils.h"
 #include "sim_phys.h"
 #include <cmath>
-
+#include <omp.h>
 int main(){
-  // this is serial 
+  //OPENMP INITIALIZATION
+  const int NT = 8;
+
   printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 23;
-  Magnet *all_mags = new Magnet[1];
-  all_mags[0] = mag;
+  int magnet_count = 8;
+  Magnet *all_mags = new Magnet[magnet_count];
+  for (int i = 0; i < magnet_count; i++)
+    {
+      all_mags[i] = mag;
+    }
+
   SystemDetails sd;
   sd.prop_rad = 0.7/2; //change here
   sd.motor_rad = .089 / 2;
@@ -19,10 +26,10 @@ int main(){
   sd.gap = 0.015;
   sd.magnets = all_mags;
   sd.duration = 30;
-  sd.magnet_count = 1;
+  sd.magnet_count = magnet_count;
   float rate1;
   //printf("about to find success rate\n");
-  rate1 = find_success_rate(360,sd);
+  rate1 = find_success_rate(60,sd);
   printf("Check it: %f\n", rate1*100);
 
   printf("running test and writing to file\n");
