@@ -27,14 +27,16 @@ int main(){
   sd.magnets = all_mags;
   sd.duration = 30;
   sd.magnet_count = magnet_count;
-  float rate1, t0, t1;
+  float rate1;
+  double t0, t1, netT;
   //printf("about to find success rate\n");
   
   t0 = omp_get_wtime();
-  rate1 = find_success_rate(60,sd);
+  rate1 = find_success_rate(30,sd);
   t1 = omp_get_wtime();
+  netT = t1-t0;
   printf("Check it: %f. \n", rate1*100);
-  printf("Took %f sec to check it and check it good.\n", t1-t0);
+  printf("Took %f sec to check it and check it good.\n", netT);
 
   /*
   printf("running test and writing to file\n");

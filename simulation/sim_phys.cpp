@@ -5,7 +5,7 @@
 #include <omp.h>
 
 using namespace std;
-const int MAX_THREADS = 8;
+const int MAX_THREADS = 1;
 
 float distance(float theta, float radius);
 void sas_solver(float theta, float r, float gap, float &dist, float &phi);

@@ -8,7 +8,7 @@ using namespace std;
 
 float find_success_rate(int n, SystemDetails sd)
 {
-  printf("in sim_utils, about to find succ rate\n");
+  //printf("in sim_utils, about to find succ rate\n");
   float max_succ_theta = (5.0/180) * M_PI;
   float final_theta;
   int succ_cnt = 0;
@@ -17,12 +17,14 @@ float find_success_rate(int n, SystemDetails sd)
 
   for(int i = 1; i<n+1; i++)
   {
+      //printf("RUN NUMBER: %d, theta = %f \n",i,i*2*M_PI/n);
       temp_data = test(i*2*M_PI/n, sd);
       final_theta = temp_data.all_theta[temp_data.length-1];
       if(fabs(final_theta)<max_succ_theta || fabs(final_theta-M_PI)<max_succ_theta || fabs(final_theta-2*M_PI) < max_succ_theta)
       {
           //printf("succ! final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
           succ_cnt++;
+          //printf("Success!\n");
       }
       //else printf("fail: final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
   }
