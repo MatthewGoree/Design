@@ -5,7 +5,7 @@
 #include <omp.h>
 int main(){
   //OPENMP INITIALIZATION
-  const int NT = 8;
+  //const int NT = 8;
 
   printf("beginning of main\n");
   Magnet mag;
