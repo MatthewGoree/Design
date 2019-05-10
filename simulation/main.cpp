@@ -2,14 +2,15 @@
 #include "sim_utils.h"
 #include "sim_phys.h"
 #include <cmath>
+#include <ctime>
 
 int main(){
   // this is serial 
   printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
-  mag.fConst = 23;
-  int magnet_count = 50;
+  mag.fConst = 1;
+  int magnet_count = 30;
   Magnet *all_mags = new Magnet[magnet_count];
   for(int i=0; i<magnet_count; i++) all_mags[i]=mag;
   SystemDetails sd;
@@ -23,18 +24,17 @@ int main(){
   sd.magnet_count = magnet_count;
   float rate1;
   //printf("about to find success rate\n");
+  
+
+  clock_t t0 = clock();
   rate1 = find_success_rate(30,sd);
+  clock_t t1 = clock();
   printf("Check it: %f\n", rate1*100);
+  printf("finished in %f seconds\n", ((double) t1-t0)/CLOCKS_PER_SEC);
 
   //printf("running test and writing to file\n");
   //printf("matts change2\n");
 
-  //OutputStruct data = test(0,sd);
-
-  /*char filename[] = {'d','a','t','a','1','.','c','s','v', '\0'};
-  write_data(filename, data);
-  printf("Wrote to data1.csv\n");
-  */  
 return 0;
 }
 
