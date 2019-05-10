@@ -3,19 +3,26 @@
 #include <iostream>
 #include "sim_utils.h"
 #include "sim_phys.h"
+#include <mpi.h>
 using namespace std;
 
 
 float find_success_rate(int n, SystemDetails sd)
 {
+
+  int ierr, world_size, world_rank;
+  ierr = MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
   //printf("in sim_utils, about to find succ rate\n");
   float max_succ_theta = (5.0/180) * M_PI;
   float final_theta;
   int succ_cnt = 0;
+  int global_cnt = 0;
 
   OutputStruct temp_data;
 
-  for(int i = 1; i<n+1; i++)
+  for(int i = world_rank; i<n; i += world_size)
   {
       //printf("RUN NUMBER: %d, theta = %f \n",i,i*2*M_PI/n);
       temp_data = test(i*2*M_PI/n, sd);
@@ -28,8 +35,9 @@ float find_success_rate(int n, SystemDetails sd)
       }
       //else printf("fail: final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
   }
+  ierr = MPI_Reduce(&succ_cnt, &global_cnt, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   
-  return (float) succ_cnt/n;
+  return (float) global_cnt / n;
   
 }
 

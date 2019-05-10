@@ -3,9 +3,18 @@
 #include "sim_phys.h"
 #include <cmath>
 #include <omp.h>
-int main(){
+#include <mpi.h>
+int main(int argc, char **argv){
   //OPENMP INITIALIZATION
   //const int NT = 8;
+ //fdsfds 
+  int ierr;
+  ierr = MPI_Init(&argc, &argv);
+  int world_size;
+  ierr = MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+  int world_rank;
+  ierr = MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+
 
   printf("beginning of main\n");
   Magnet mag;
@@ -29,25 +38,18 @@ int main(){
   sd.magnet_count = magnet_count;
   float rate1;
   double t0, t1, netT;
-  //printf("about to find success rate\n");
   
   t0 = omp_get_wtime();
   rate1 = find_success_rate(30,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
+  if (world_rank == 0){
   printf("Check it: %f. \n", rate1*100);
   printf("Took %f sec to check it and check it good.\n", netT);
+  }
+  
+  ierr = MPI_Finalize();
 
-  /*
-  printf("running test and writing to file\n");
-  printf("matts change2\n");
-
-  OutputStruct data = test(0,sd);
-
-  char filename[] = {'d','a','t','a','1','.','c','s','v', '\0'};
-  write_data(filename, data);
-  printf("Wrote to data1.csv\n");
-  */
   return 0;
 }
 
