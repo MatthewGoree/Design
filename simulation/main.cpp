@@ -24,7 +24,7 @@ int main(){
   sd.magnet_count = magnet_count;
   float rate1;
   //printf("about to find success rate\n");
-  
+  //comment
 
   clock_t t0 = clock();
   rate1 = find_success_rate(30,sd);
