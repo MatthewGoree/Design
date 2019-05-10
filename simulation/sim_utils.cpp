@@ -17,11 +17,13 @@ float find_success_rate(int n, SystemDetails sd)
 
   for(int i = 1; i<n+1; i++)
   {
+
       temp_data = test(i*2*M_PI/n, sd);
       final_theta = temp_data.all_theta[temp_data.length-1];
       if(fabs(final_theta)<max_succ_theta || fabs(final_theta-M_PI)<max_succ_theta || fabs(final_theta-2*M_PI) < max_succ_theta)
       {
-          //printf("succ! final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
+	//printf("succ! final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);      
+	
           succ_cnt++;
       }
       //else printf("fail: final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
