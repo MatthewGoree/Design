@@ -5,7 +5,7 @@
 #include <omp.h>
 
 using namespace std;
-const int MAX_THREADS = 8;
+const int MAX_THREADS = 1;
 
 float distance(float theta, float radius);
 void sas_solver(float theta, float r, float gap, float &dist, float &phi);
@@ -102,7 +102,7 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
   float magnet_offset, f_const, n_const, rel_theta, dist, phi, f_sum = 0;
   
   
-#pragma omp parallel for reduction(+:f_sum) num_threads(MAX_THREADS) schedule(static) private(magnet_offset,rel_theta, f_const, n_const, dist, gap, phi)
+#pragma omp parallel for reduction(+:f_sum)  private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
   for (int i = 0; i < magnetCount; i++)
     {
       //printf("thread is %d, gap is %f\n", omp_get_thread_num(),gap);
@@ -130,7 +130,7 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
       else if ((rel_theta > 2 * M_PI - magnet_range) || (rel_theta < M_PI && rel_theta > M_PI - magnet_range))
         f_sum += fabs(n_const * cos(phi) * pow(dist, -3.882));
 
-           printf("thread %d, magnetrange=%f,dist=%f, rel_theta=%f, r=%f, gap=%f, phi=%f\n",omp_get_thread_num(),magnet_range, dist,rel_theta,r,gap,phi);
+      //printf("thread %d, magnetrange=%f,dist=%f, rel_theta=%f, r=%f, gap=%f, phi=%f, f_sum=%f\n",omp_get_thread_num(),magnet_range, dist,rel_theta,r,gap,phi,f_sum);
       //if (f_sum != 0) printf("thread# = %d, f_sum is %f\n", f_sum, omp_get_thread_num());
     }
 
