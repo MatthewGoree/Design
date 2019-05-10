@@ -10,8 +10,8 @@ int main(){
   printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
-  mag.fConst = 23;
-  int magnet_count = 8;
+  mag.fConst = 1;
+  int magnet_count = 30;
   Magnet *all_mags = new Magnet[magnet_count];
   for (int i = 0; i < magnet_count; i++)
     {
@@ -27,11 +27,16 @@ int main(){
   sd.magnets = all_mags;
   sd.duration = 30;
   sd.magnet_count = magnet_count;
-  float rate1;
+  float rate1, t0, t1;
   //printf("about to find success rate\n");
+  
+  t0 = omp_get_wtime();
   rate1 = find_success_rate(60,sd);
-  printf("Check it: %f\n", rate1*100);
+  t1 = omp_get_wtime();
+  printf("Check it: %f. \n", rate1*100);
+  printf("Took %f sec to check it and check it good.\n", t1-t0);
 
+  /*
   printf("running test and writing to file\n");
   printf("matts change2\n");
 
@@ -40,6 +45,7 @@ int main(){
   char filename[] = {'d','a','t','a','1','.','c','s','v', '\0'};
   write_data(filename, data);
   printf("Wrote to data1.csv\n");
+  */
   return 0;
 }
 
