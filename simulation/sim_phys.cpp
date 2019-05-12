@@ -110,6 +110,8 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
       magnet_offset = magnets[i].offset;
       f_const = magnets[i].fConst;
 
+      //printf("offset: %f, f const: %f \n", magnet_offset, f_const);
+
       //f_const = f_const * pow(gap,2);
       n_const = f_const/pow(gap,-3.882) * 7.2;
 

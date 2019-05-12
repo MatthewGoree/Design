@@ -73,6 +73,38 @@ void make_cont_magnet(float mag_range, float drange, float force, Magnet *magnet
     }
 }
 
+void magnum(int total_mags, float mag_range, float force, SystemDetails &sd)
+{
+  //float num_mags = ((float)total_mags - 1)/2;
+  //cout<<(num_mags)<<endl;
+  if (total_mags % 2 == 0) total_mags += 1;
+  int num_mags = (total_mags - 1)/2;
+  float drange = round(mag_range/num_mags);
+ 
+  //printf("total mags: %d, num_mags %d, drange: %f \n",total_mags,num_mags,drange); 
+  float max_force = force / mag_range * drange;
+  //printf("max force: %f, mag range: %f, drange: %f \n", max_force, mag_range, drange);
+  Magnet *magnets = new Magnet[total_mags];
+
+  magnets[0] = createMagnet(0, max_force);
+  for (int i = 1; i <=  num_mags; i++)
+    {
+      magnets[2 * i - 1] = createMagnet(i * drange * M_PI / 180 / 2, max_force - max_force * i * drange / mag_range);
+      magnets[2 * i] = createMagnet(-1 * i * drange * M_PI / 180 / 2, max_force - max_force * i * drange / mag_range);
+    }
+
+  sd.magnets = magnets;
+  sd.magnet_count = total_mags;
+ 
+  /*for(int i=0; i<total_mags; i++){
+  	printf("i = %d, magnet offset = %f, magnet strength = %f \n",i,sd.magnets[i].offset * 360 / M_PI, sd.magnets[i].fConst);
+  }*/
+
+
+};
+
+
+
 Magnet createMagnet(float offset, float fConst)
 {
   Magnet magnet;

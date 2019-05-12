@@ -32,5 +32,6 @@ struct SystemDetails
 float find_success_rate(int n, SystemDetails sd);
 void write_data(char *filename, OutputStruct data);
 void make_cont_magnet(float mag_range, float drange, float force, Magnet *magnets);
+void magnum(int total_mags, float mag_range, float max_force, SystemDetails &sd);
 
 #endif
