@@ -4,6 +4,8 @@
 #include <cmath>
 #include <omp.h>
 #include <mpi.h>
+#include <string>
+using namespace std;
 int main(int argc, char **argv){
   //OPENMP INITIALIZATION
   //const int NT = 8;
@@ -39,7 +41,7 @@ int main(int argc, char **argv){
   sd.gap = 0.015;
   //sd.magnets = all_mags;
   sd.duration = 30;
-  sd.thread_count = 16;
+  sd.thread_count = stoi(argv[1]);
   //sd.magnet_count = magnet_count;
   float rate1;
   double t0, t1, netT;
