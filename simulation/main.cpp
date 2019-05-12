@@ -30,7 +30,7 @@ int main(int argc, char **argv){
 
   SystemDetails sd;
   // number of magnets, angle you want to spread over (on one side), total pull force 
-  magnum(7, 30, 12, sd);  
+  magnum(500, 30, 12, sd);  
 
   sd.prop_rad = 0.7/2; //change here
   sd.motor_rad = .089 / 2;

@@ -79,7 +79,8 @@ void magnum(int total_mags, float mag_range, float force, SystemDetails &sd)
   //cout<<(num_mags)<<endl;
   if (total_mags % 2 == 0) total_mags += 1;
   int num_mags = (total_mags - 1)/2;
-  float drange = round(mag_range/num_mags);
+  float drange = mag_range/(num_mags);
+
  
   //printf("total mags: %d, num_mags %d, drange: %f \n",total_mags,num_mags,drange); 
   float max_force = force / mag_range * drange;
@@ -96,7 +97,8 @@ void magnum(int total_mags, float mag_range, float force, SystemDetails &sd)
   sd.magnets = magnets;
   sd.magnet_count = total_mags;
  
-  /*for(int i=0; i<total_mags; i++){
+/*
+  for(int i=0; i<total_mags; i++){
   	printf("i = %d, magnet offset = %f, magnet strength = %f \n",i,sd.magnets[i].offset * 360 / M_PI, sd.magnets[i].fConst);
   }*/
 
