@@ -44,6 +44,7 @@ int main(int argc, char **argv){
   double t0, t1, netT;
   
   t0 = omp_get_wtime();
+
   rate1 = find_success_rate(60,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
