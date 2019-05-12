@@ -39,13 +39,14 @@ int main(int argc, char **argv){
   sd.gap = 0.015;
   //sd.magnets = all_mags;
   sd.duration = 30;
+  sd.thread_count = 16;
   //sd.magnet_count = magnet_count;
   float rate1;
   double t0, t1, netT;
   
   t0 = omp_get_wtime();
 
-  rate1 = find_success_rate(60,sd);
+  rate1 = find_success_rate(1,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
   if (world_rank == 0){

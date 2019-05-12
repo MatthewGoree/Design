@@ -9,7 +9,7 @@ const int MAX_THREADS = 4;
 
 float distance(float theta, float radius);
 void sas_solver(float theta, float r, float gap, float &dist, float &phi);
-float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnet_count);
+float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnet_count, int thread_count);
 OutputStruct test(float theta, SystemDetails systemDetails);
 float distance(float theta, float radius);
 
@@ -52,7 +52,7 @@ OutputStruct test(float theta, SystemDetails sd)
       else avel = avel * .99955;
       
       t0 = omp_get_wtime();
-      float f1 = magnetForce(theta, sd.magnets, sd.magnet_range, sd.motor_rad, sd.gap, sd.magnet_count);
+      float f1 = magnetForce(theta, sd.magnets, sd.magnet_range, sd.motor_rad, sd.gap, sd.magnet_count, sd.thread_count);
       t1 = omp_get_wtime();
       total_force_time += (t1 - t0);
      
@@ -102,12 +102,12 @@ OutputStruct test(float theta, SystemDetails sd)
 
 }
 
-float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnetCount)
+float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnetCount, int thread_count)
 {
   float magnet_offset, f_const, n_const, rel_theta, dist, phi, f_sum = 0;
   
   
-#pragma omp parallel for reduction(+:f_sum) num_threads(MAX_THREADS) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
+#pragma omp parallel for reduction(+:f_sum) num_threads(thread_count) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
   for (int i = 0; i < magnetCount; i++)
     {
       //printf("thread is %d, gap is %f\n", omp_get_thread_num(),gap);
