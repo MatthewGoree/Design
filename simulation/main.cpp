@@ -48,7 +48,7 @@ int main(int argc, char **argv){
   
   t0 = omp_get_wtime();
 
-  rate1 = find_success_rate(1,sd);
+  rate1 = find_success_rate(10,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
   if (world_rank == 0){
