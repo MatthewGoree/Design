@@ -36,7 +36,7 @@ OutputStruct test(float theta, SystemDetails sd)
   all_t[0] = 0;
   all_distance[0] = distance(theta, sd.prop_rad);
 
-
+  double t0,t1,total_force_time;
   bool LINEAR_FINISH = true;
 
   for (int i = 1; i < max_iter; i++)
@@ -50,8 +50,11 @@ OutputStruct test(float theta, SystemDetails sd)
           else if (avel < 0 && avel > -30) avel = avel + 12.8 * dt;
         }
       else avel = avel * .99955;
-
+      
+      t0 = omp_get_wtime();
       float f1 = magnetForce(theta, sd.magnets, sd.magnet_range, sd.motor_rad, sd.gap, sd.magnet_count);
+      t1 = omp_get_wtime();
+      total_force_time += (t1 - t0);
      
       all_f[i] = f1;
       torque = f1 * sd.motor_rad;
@@ -93,6 +96,8 @@ OutputStruct test(float theta, SystemDetails sd)
   data.all_theta = all_theta;
   data.all_t = all_t;
   data.all_distance = all_distance;
+  
+  printf("Average force time: %.9lf\n", total_force_time / (max_iter - 1));
   return data;
 
 }
