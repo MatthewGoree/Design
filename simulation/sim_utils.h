@@ -27,6 +27,7 @@ struct SystemDetails
   float gap;
   float I;
   float prop_rad;
+  int thread_count;
 };
 
 float find_success_rate(int n, SystemDetails sd);
