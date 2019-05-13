@@ -4,6 +4,7 @@
 #include "sim_utils.h"
 #include "sim_phys.h"
 #include <mpi.h>
+#include <omp.h>
 using namespace std;
 
 
@@ -21,7 +22,10 @@ float find_success_rate(int n, SystemDetails sd)
   int global_cnt = 0;
 
   OutputStruct temp_data;
-
+  #pragma omp parallel num_threads(4)
+  {
+  #pragma omp single
+  {
   for(int i = world_rank; i<n; i += world_size)
   {
       //printf("RUN NUMBER: %d, theta = %f \n",i,i*2*M_PI/n);
@@ -29,16 +33,16 @@ float find_success_rate(int n, SystemDetails sd)
       final_theta = temp_data.all_theta[temp_data.length-1];
       if(fabs(final_theta)<max_succ_theta || fabs(final_theta-M_PI)<max_succ_theta || fabs(final_theta-2*M_PI) < max_succ_theta)
       {
-          //printf("succ! final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
           succ_cnt++;
-          //printf("Success!\n");
       }
       //else printf("fail: final_theta: %f, max_theta: %f \n", final_theta, max_succ_theta);
   }
   ierr = MPI_Reduce(&succ_cnt, &global_cnt, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   
-  return (float) global_cnt / n;
+  }
   
+}
+return (float) global_cnt / n;
 }
 
 void write_data(char *filename, OutputStruct data)

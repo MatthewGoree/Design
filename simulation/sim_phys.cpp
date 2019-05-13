@@ -38,7 +38,7 @@ OutputStruct test(float theta, SystemDetails sd)
 
   double t0,t1,total_force_time;
   bool LINEAR_FINISH = true;
-
+  total_force_time = 0;
   for (int i = 1; i < max_iter; i++)
     {
 
@@ -106,8 +106,7 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
 {
   float magnet_offset, f_const, n_const, rel_theta, dist, phi, f_sum = 0;
   
-  
-#pragma omp parallel for reduction(+:f_sum) num_threads(thread_count) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
+#pragma omp taskloop reduction(+:f_sum) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
   for (int i = 0; i < magnetCount; i++)
     {
       //printf("thread is %d, gap is %f\n", omp_get_thread_num(),gap);
