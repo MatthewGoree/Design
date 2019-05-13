@@ -20,7 +20,7 @@ int main(int argc, char **argv){
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 1;
-  int magnet_count = 10000;
+  int magnet_count = 360*stoi(argv[1]);
 
   SystemDetails sd;
   // number of magnets, angle you want to spread over (on one side), total pull force 

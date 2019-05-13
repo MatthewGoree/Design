@@ -4,7 +4,7 @@ make
 
 times=()
 threads=()
-for i in {1..48}
+for i in {1..50}
 do 
   printf "$i, "
   ./a.out "$i"
