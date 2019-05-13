@@ -17,22 +17,14 @@ int main(int argc, char **argv){
   int world_rank;
   ierr = MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
-
-  printf("beginning of main\n");
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 1;
-  int magnet_count = 360;
-  /*Magnet *all_mags = new Magnet[magnet_count];
-  for (int i = 0; i < magnet_count; i++)
-    {
-      all_mags[i] = mag;
-    }
-  */
+  int magnet_count = 10000;
 
   SystemDetails sd;
   // number of magnets, angle you want to spread over (on one side), total pull force 
-  magnum(500, 30, 12, sd);  
+  magnum(magnet_count, 30, 12, sd);  
 
   sd.prop_rad = 0.7/2; //change here
   sd.motor_rad = .089 / 2;
@@ -48,15 +40,16 @@ int main(int argc, char **argv){
   
   t0 = omp_get_wtime();
 
-  rate1 = find_success_rate(10,sd);
+  rate1 = find_success_rate(1,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
   if (world_rank == 0){
-  printf("Check it: %f. \n", rate1*100);
-  printf("Took %f sec to check it and check it good.\n", netT);
+    //printf("Check it: %f. \n", rate1*100);
+    //printf("Took %f sec to check it and check it good.\n", netT);
   }
   
   ierr = MPI_Finalize();
+  //if (world_rank == 0) cout << 10 << endl;
 
   return 0;
 }
