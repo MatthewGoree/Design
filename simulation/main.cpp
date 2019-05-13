@@ -22,7 +22,7 @@ int main(int argc, char **argv){
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 1;
-  int magnet_count = 360;
+  int magnet_count = 300;
   /*Magnet *all_mags = new Magnet[magnet_count];
   for (int i = 0; i < magnet_count; i++)
     {
@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 
   SystemDetails sd;
   // number of magnets, angle you want to spread over (on one side), total pull force 
-  magnum(500, 30, 12, sd);  
+  magnum(magnet_count, 30, 12, sd);  
 
   sd.prop_rad = 0.7/2; //change here
   sd.motor_rad = .089 / 2;
@@ -47,8 +47,11 @@ int main(int argc, char **argv){
   double t0, t1, netT;
   
   t0 = omp_get_wtime();
+  //#pragma omp parallel num_threads(sd.thread_count)
+  //{
+  rate1 = find_success_rate(10,sd);
+  //}
 
-  rate1 = find_success_rate(30,sd);
   t1 = omp_get_wtime();
   netT = t1-t0;
   if (world_rank == 0){

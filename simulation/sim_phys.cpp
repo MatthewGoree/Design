@@ -105,10 +105,14 @@ OutputStruct test(float theta, SystemDetails sd)
 float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, float gap, int magnetCount, int thread_count)
 {
   float magnet_offset, f_const, n_const, rel_theta, dist, phi, f_sum = 0;
-  
-#pragma omp taskloop reduction(+:f_sum) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
+  int grains = round(magnetCount/omp_get_num_threads());
+  //printf("max threads: %d\n", omp_get_num_threads());  
+  //printf("total iterations: %d, grain size: %d \n", magnetCount, grains);
+#pragma omp taskloop grainsize(grains) reduction(+:f_sum) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
   for (int i = 0; i < magnetCount; i++)
     {
+      //printf("Thread Num: %d, i = %d  \n", omp_get_thread_num(), i);
+      //if(i ==  magnetCount -1) printf("full loop_______\n");
       //printf("thread is %d, gap is %f\n", omp_get_thread_num(),gap);
       //printf("This is thread %d and i = %d\n", omp_get_thread_num(), i);
       magnet_offset = magnets[i].offset;
@@ -139,6 +143,7 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
       //printf("thread %d, magnetrange=%f,dist=%f, rel_theta=%f, r=%f, gap=%f, phi=%f, f_sum=%f\n",omp_get_thread_num(),magnet_range, dist,rel_theta,r,gap,phi,f_sum);
       //if (f_sum != 0) printf("thread# = %d, f_sum is %f\n", f_sum, omp_get_thread_num());
     }
+ //printf("full loop_____\n");
 
 
   return f_sum;

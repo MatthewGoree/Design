@@ -22,8 +22,7 @@ float find_success_rate(int n, SystemDetails sd)
   int global_cnt = 0;
 
   OutputStruct temp_data;
-  #pragma omp parallel num_threads(4)
-  {
+  #pragma omp parallel num_threads(sd.thread_count)
   #pragma omp single
   {
   for(int i = world_rank; i<n; i += world_size)
@@ -41,7 +40,7 @@ float find_success_rate(int n, SystemDetails sd)
   
   }
   
-}
+
 return (float) global_cnt / n;
 }
 
