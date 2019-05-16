@@ -49,14 +49,14 @@ int main(int argc, char **argv){
   t0 = omp_get_wtime();
   //#pragma omp parallel num_threads(sd.thread_count)
   //{
-  rate1 = find_success_rate(10,sd);
+  rate1 = find_success_rate(1,sd);
   //}
 
   t1 = omp_get_wtime();
   netT = t1-t0;
   if (world_rank == 0){
-  printf("Check it: %f. \n", rate1*100);
-  printf("Took %f sec to check it and check it good.\n", netT);
+  //printf("Check it: %f. \n", rate1*100);
+  //printf("Took %f sec to check it and check it good.\n", netT);
   }
   
   ierr = MPI_Finalize();

@@ -97,7 +97,7 @@ OutputStruct test(float theta, SystemDetails sd)
   data.all_t = all_t;
   data.all_distance = all_distance;
   
-  printf("Average force time: %.9lf\n", total_force_time / (max_iter - 1));
+  printf("Average force time: %.9lf\n", total_force_time);
   return data;
 
 }
