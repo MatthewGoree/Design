@@ -1,0 +1,9 @@
+TACC:  Starting up job 3558597 
+TACC:  Starting parallel tasks... 
+48, 0.285081TACC:  Shutdown complete. Exiting. 
+TACC:  Starting up job 3558717 
+TACC:  Starting parallel tasks... 
+[mpiexec@c506-001.stampede2.tacc.utexas.edu] Sending Ctrl-C to processes as requested
+[mpiexec@c506-001.stampede2.tacc.utexas.edu] Press Ctrl-C again to force abort
+TACC:  Shutdown complete. Exiting. 
+TACC:  Starting up job 3558717 

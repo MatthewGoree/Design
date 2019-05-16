@@ -115,20 +115,14 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
 #pragma omp parallel for reduction(+:f_sum) num_threads(thread_count) private(magnet_offset,rel_theta, f_const, n_const, dist, phi)
   for (int i = 0; i < magnetCount; i++)
     {
-      //printf("thread is %d, gap is %f\n", omp_get_thread_num(),gap);
-      //printf("This is thread %d and i = %d\n", omp_get_thread_num(), i);
       magnet_offset = magnets[i].offset;
       f_const = magnets[i].fConst;
-
-      //printf("offset: %f, f const: %f \n", magnet_offset, f_const);
-
-      //f_const = f_const * pow(gap,2);
       n_const = f_const/pow(gap,-3.882) * 7.2;
 
       rel_theta = theta - magnet_offset;
 
       if (rel_theta < 0) rel_theta += 2 * M_PI;
-      if (rel_theta >= 2 * M_PI) rel_theta = fmod(rel_theta, 2*M_PI); //NEED TO CHECK THIS
+      if (rel_theta >= 2 * M_PI) rel_theta = fmod(rel_theta, 2*M_PI); 
 
       if (rel_theta < M_PI / 2) sas_solver(rel_theta, r, gap, dist, phi);
       else if (rel_theta > M_PI / 2 && rel_theta <= M_PI)
@@ -142,8 +136,6 @@ float magnetForce(float theta, Magnet *magnets, float magnet_range, float r, flo
       else if ((rel_theta > 2 * M_PI - magnet_range) || (rel_theta < M_PI && rel_theta > M_PI - magnet_range))
         f_sum += fabs(n_const * cos(phi) * pow(dist, -3.882));
 
-      //printf("thread %d, magnetrange=%f,dist=%f, rel_theta=%f, r=%f, gap=%f, phi=%f, f_sum=%f\n",omp_get_thread_num(),magnet_range, dist,rel_theta,r,gap,phi,f_sum);
-      //if (f_sum != 0) printf("thread# = %d, f_sum is %f\n", f_sum, omp_get_thread_num());
     }
 
 

@@ -16,11 +16,11 @@ int main(int argc, char **argv){
   ierr = MPI_Comm_size(MPI_COMM_WORLD, &world_size);
   int world_rank;
   ierr = MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
+  //ta = omp_get_wtime();
   Magnet mag;
   mag.offset = 0;
   mag.fConst = 1;
-  int magnet_count = 360*stoi(argv[1]);
+  int magnet_count = 3600 *stoi(argv[1]);
 
   SystemDetails sd;
   // number of magnets, angle you want to spread over (on one side), total pull force 
@@ -46,8 +46,8 @@ int main(int argc, char **argv){
   if (world_rank == 0){
     //printf("Check it: %f. \n", rate1*100);
     //printf("Took %f sec to check it and check it good.\n", netT);
+    //printf("%d, %f", world_size, netT);
   }
-  
   ierr = MPI_Finalize();
   //if (world_rank == 0) cout << 10 << endl;
 

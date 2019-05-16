@@ -1,0 +1,14 @@
+#!/bin/sh
+echo making project..
+make
+
+times=()
+threads=()
+for i in {1..48}
+do 
+  ibrun -np "$i" ./a.out 4 > output.txt
+  
+done
+#echo ${times[*]}
+exit 0
+
